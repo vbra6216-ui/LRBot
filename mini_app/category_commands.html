@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Команды категории - Helper Bot</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1 class="logo">🤖 Helper Bot</h1>
+                    <p class="subtitle" id="categoryTitle">Команды категории</p>
+                </div>
+                <div class="header-actions">
+                    <a href="categories.html" class="btn-icon" title="Назад">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 12H5M12 19L5 12L12 5" stroke="#7B61FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-section">
+                <div class="content-container">
+                    <h3 id="categoryName">Загрузка...</h3>
+                    <div id="categoryCommandsList" class="commands-list">
+                        <div class="loading">Загрузка команд...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Получаем параметр категории из URL
+        function getCategoryFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('category');
+        }
+
+        // Загрузка команд категории
+        async function loadCategoryCommands() {
+            const category = getCategoryFromURL();
+            
+            if (!category) {
+                document.getElementById('categoryName').textContent = 'Категория не найдена';
+                document.getElementById('categoryCommandsList').innerHTML = 
+                    '<div class="no-results">Категория не указана</div>';
+                return;
+            }
+
+            // Обновляем заголовки
+            document.getElementById('categoryTitle').textContent = `Команды: ${category}`;
+            document.getElementById('categoryName').textContent = `📁 ${category}`;
+
+            try {
+                const response = await fetch('commands.json');
+                const commands = await response.json();
+                
+                const categoryCommands = commands.filter(cmd => cmd.category === category);
+                const commandsList = document.getElementById('categoryCommandsList');
+                
+                if (categoryCommands.length === 0) {
+                    commandsList.innerHTML = '<div class="no-results">Команды не найдены в этой категории</div>';
+                    return;
+                }
+                
+                // Обернем команды в grid контейнер
+                commandsList.innerHTML = `<div class="commands-grid">${categoryCommands.map(cmd => `
+                    <div class="command-item" data-command="${cmd.command.replace(/"/g, '&quot;')}">
+                        <div class="command-name">${cmd.command}</div>
+                        <div class="command-desc">${cmd.description}</div>
+                    </div>
+                `).join('')}</div>`;
+                
+                // Добавляем обработчики копирования на всю карточку
+                commandsList.querySelectorAll('.command-item').forEach(el => {
+                    el.addEventListener('click', function() {
+                        copyCommandToClipboard(this.dataset.command);
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Ошибка загрузки команд:', error);
+                document.getElementById('categoryCommandsList').innerHTML = 
+                    '<div class="no-results">Ошибка загрузки команд</div>';
+            }
+        }
+
+        // Функция копирования
+        function copyCommandToClipboard(command) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(command).then(() => {
+                    showCommandNotification('Команда скопирована!');
+                }).catch(() => {
+                    fallbackCopyCommand(command);
+                });
+            } else {
+                fallbackCopyCommand(command);
+            }
+        }
+        function fallbackCopyCommand(command) {
+            const textArea = document.createElement('textarea');
+            textArea.value = command;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showCommandNotification('Команда скопирована!');
+            } catch (err) {
+                showCommandNotification('Ошибка копирования');
+            }
+            document.body.removeChild(textArea);
+        }
+        function showCommandNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; background: #7B61FF; color: #fff;
+                padding: 12px 20px; border-radius: 8px; z-index: 1000; font-weight: 500;
+                box-shadow: 0 4px 16px rgba(123, 97, 255, 0.3);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+        // Загружаем команды при загрузке страницы
+        document.addEventListener('DOMContentLoaded', loadCategoryCommands);
+    </script>
+</body>
+</html> 
