@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор бота - Mini App</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #1a1a2e 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .choice-container {
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .choice-header {
+            margin-bottom: 60px;
+        }
+
+        .choice-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .choice-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+            margin: 0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .choice-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .choice-button {
+            background: linear-gradient(135deg, #23244a 0%, #2a2c5a 100%);
+            border: 2px solid rgba(123, 97, 255, 0.2);
+            border-radius: 20px;
+            padding: 32px 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .choice-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(123, 97, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .choice-button:hover::before {
+            left: 100%;
+        }
+
+        .choice-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(123, 97, 255, 0.3);
+            border-color: rgba(123, 97, 255, 0.4);
+        }
+
+        .choice-button:active {
+            transform: translateY(-2px);
+        }
+
+        .button-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #7B61FF 0%, #9B7DFF 100%);
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(123, 97, 255, 0.3);
+        }
+
+        .button-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .button-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .button-description {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .helper-bot {
+            border-color: rgba(123, 97, 255, 0.3);
+        }
+
+        .helper-bot:hover {
+            border-color: rgba(123, 97, 255, 0.6);
+        }
+
+        .admin-bot {
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+
+        .admin-bot:hover {
+            border-color: rgba(255, 107, 107, 0.6);
+        }
+
+        .admin-bot .button-icon {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
+            box-shadow: 0 8px 24px rgba(255, 107, 107, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .choice-container {
+                padding: 20px;
+            }
+            
+            .choice-title {
+                font-size: 2rem;
+            }
+            
+            .choice-subtitle {
+                font-size: 1rem;
+            }
+            
+            .choice-buttons {
+                gap: 20px;
+            }
+            
+            .choice-button {
+                padding: 24px 20px;
+            }
+            
+            .button-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .button-icon svg {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .button-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .choice-title {
+                font-size: 1.8rem;
+            }
+            
+            .choice-button {
+                padding: 20px 16px;
+            }
+            
+            .button-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .button-icon svg {
+                width: 25px;
+                height: 25px;
+            }
+            
+            .button-title {
+                font-size: 1.3rem;
+            }
+            
+            .button-description {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="choice-container">
+        <div class="choice-header">
+            <h1 class="choice-title">🤖 Выберите бота</h1>
+            <p class="choice-subtitle">Выберите подходящего помощника для ваших задач</p>
+        </div>
+        
+        <div class="choice-buttons">
+            <a href="helper.html" class="choice-button helper-bot">
+                <div class="button-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" stroke="white" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="button-title">Helper Bot</div>
+                <div class="button-description">Помощник и справочник для всех пользователей</div>
+            </a>
+            
+            <a href="adminindex.html" class="choice-button admin-bot">
+                <div class="button-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" stroke="white" stroke-width="2"/>
+                        <path d="M9 12L11 14L15 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="white" stroke-width="2"/>
+                    </svg>
+                </div>
+                <div class="button-title">Admin Bot</div>
+                <div class="button-description">Главный помощник и справочник для администрации</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Анимация появления кнопок
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.choice-button');
+            buttons.forEach((button, index) => {
+                button.style.opacity = '0';
+                button.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    button.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    button.style.opacity = '1';
+                    button.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html> 

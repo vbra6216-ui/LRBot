@@ -31,27 +31,13 @@ const rpTermsRussian = {
     'FM': 'ФМ',
     'SH': 'СХ',
     'FF': 'ФФ',
-    'FearRP': 'СтрахРП',
+    'FearRP': 'FearRp',
     'OOC': 'ООС',
     'IC': 'ИК'
 };
 
 // Элементы DOM
 const elements = {
-    profileBtn: document.getElementById('profileBtn'),
-    profileModal: document.getElementById('profileModal'),
-    closeProfileModal: document.getElementById('closeProfileModal'),
-    profileName: document.getElementById('profileName'),
-    profileUsername: document.getElementById('profileUsername'),
-    profileBadge: document.getElementById('profileBadge'),
-    profileAvatar: document.getElementById('profileAvatar'),
-    avatarInner: document.getElementById('avatarInner'),
-    statusIndicator: document.getElementById('statusIndicator'),
-    searchCount: document.getElementById('searchCount'),
-    favoritesCount: document.getElementById('favoritesCount'),
-    commandsUsed: document.getElementById('commandsUsed'),
-    lastActive: document.getElementById('lastActive'),
-    achievementsGrid: document.getElementById('achievementsGrid'),
 
     burgerMenuBtn: document.getElementById('burgerMenuBtn'),
     burgerMenu: document.getElementById('burgerMenu'),
@@ -100,6 +86,42 @@ const elements = {
     backFromCategory: document.getElementById('backFromCategory'),
 
     loadingOverlay: document.getElementById('loadingOverlay')
+};
+
+// Модальное окно поиска
+const searchModal = {
+    modal: null,
+    content: null,
+    closeBtn: null,
+    
+    init() {
+        this.modal = document.getElementById('searchModal');
+        this.content = document.getElementById('searchResultsList');
+        this.closeBtn = document.getElementById('closeSearchModal');
+    },
+    
+    show() {
+        if (!this.modal) this.init();
+        if (this.modal) {
+            this.modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    },
+    
+    hide() {
+        if (!this.modal) this.init();
+        if (this.modal) {
+            this.modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    },
+    
+    setContent(html) {
+        if (!this.content) this.init();
+        if (this.content) {
+            this.content.innerHTML = html;
+        }
+    }
 };
 
 // Инициализация приложения
@@ -231,7 +253,6 @@ async function loadUserProfileFromTelegram() {
         }
 
         appState.userData = userData;
-        updateProfileInfo();
 
         // Сохраняем данные в локальное хранилище
         saveUserDataToStorage(userData);
@@ -258,7 +279,6 @@ async function loadUserProfileFromTelegram() {
         };
 
         appState.userData = fallbackUserData;
-        updateProfileInfo();
         saveUserDataToStorage(fallbackUserData);
     }
 }
@@ -366,64 +386,102 @@ function saveUserDataToStorage(userData) {
 
 // Настройка обработчиков событий
 function setupEventListeners() {
-    // Профиль
-    elements.profileBtn.addEventListener('click', showProfileModal);
-    elements.closeProfileModal.addEventListener('click', hideProfileModal);
-
     // Бургер меню
-    elements.burgerMenuBtn.addEventListener('click', showBurgerMenu);
-    elements.closeBurgerMenu.addEventListener('click', hideBurgerMenu);
+    if (elements.burgerMenuBtn && elements.burgerMenu && elements.closeBurgerMenu) {
+        elements.burgerMenuBtn.addEventListener('click', showBurgerMenu);
+        elements.closeBurgerMenu.addEventListener('click', hideBurgerMenu);
 
-    // Закрытие бургер меню при клике вне его
-    document.addEventListener('click', function(event) {
-        if (event.target === elements.burgerMenu) {
-            hideBurgerMenu();
-        }
-    });
-
-    // Закрытие модального окна профиля при клике вне его
-    document.addEventListener('click', function(event) {
-        if (event.target === elements.profileModal) {
-            hideProfileModal();
-        }
-    });
+        // Закрытие бургер меню при клике вне его
+        document.addEventListener('click', function(event) {
+            if (event.target === elements.burgerMenu) {
+                hideBurgerMenu();
+            }
+        });
+    }
 
     // Поиск
-    elements.searchInput.addEventListener('input', handleSearchInput);
-    elements.searchBtn.addEventListener('click', performSearch);
-    elements.clearResults.addEventListener('click', clearSearchResults);
+    if (elements.searchInput) {
+        elements.searchInput.addEventListener('input', handleSearchInput);
+        elements.searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    }
+    
+    if (elements.searchBtn) {
+        elements.searchBtn.addEventListener('click', performSearch);
+    }
+    
+    if (elements.clearResults) {
+        elements.clearResults.addEventListener('click', clearSearchResults);
+    }
 
     // Быстрые действия - исправляем обработчики
     document.addEventListener('click', function(event) {
         const actionCard = event.target.closest('.action-card');
         if (actionCard) {
-            const action = actionCard.dataset.action;
-            if (action) {
-                handleActionClick(action);
+            const href = actionCard.getAttribute('href');
+            if (href) {
+                // Handle navigation to other pages
+                if (href.includes('.html')) {
+                    window.location.href = href;
+                } else {
+                    handleActionClick(href);
+                }
             }
         }
     });
 
     // Кнопки "Назад"
-    elements.backToMain.addEventListener('click', showMainSection);
-    elements.backFromGPS.addEventListener('click', showMainSection);
-    elements.backFromRPTerms.addEventListener('click', showMainSection);
-    elements.backFromHelperDuties.addEventListener('click', showMainSection);
-    elements.backFromChatRules.addEventListener('click', showMainSection);
-    elements.backFromMuteRules.addEventListener('click', showMainSection);
-    elements.backFromPremium.addEventListener('click', showMainSection);
-    elements.backFromCategory.addEventListener('click', showCategoriesSection);
+    if (elements.backToMain) {
+        elements.backToMain.addEventListener('click', showMainSection);
+    }
+    if (elements.backFromGPS) {
+        elements.backFromGPS.addEventListener('click', showMainSection);
+    }
+    if (elements.backFromRPTerms) {
+        elements.backFromRPTerms.addEventListener('click', showMainSection);
+    }
+    if (elements.backFromHelperDuties) {
+        elements.backFromHelperDuties.addEventListener('click', showMainSection);
+    }
+    if (elements.backFromChatRules) {
+        elements.backFromChatRules.addEventListener('click', showMainSection);
+    }
+    if (elements.backFromMuteRules) {
+        elements.backFromMuteRules.addEventListener('click', showMainSection);
+    }
+    if (elements.backFromPremium) {
+        elements.backFromPremium.addEventListener('click', showMainSection);
+    }
+    if (elements.backFromCategory) {
+        elements.backFromCategory.addEventListener('click', showCategoriesSection);
+    }
+
+    // Модальное окно поиска
+    if (searchModal.closeBtn) {
+        searchModal.closeBtn.addEventListener('click', () => searchModal.hide());
+    }
+
+    // Закрытие модального окна при клике на фон
+    if (searchModal.modal) {
+        searchModal.modal.addEventListener('click', function(e) {
+            if (e.target === searchModal.modal) {
+                searchModal.hide();
+            }
+        });
+    }
+
+    // Закрытие модального окна по Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            searchModal.hide();
+        }
+    });
 }
 
-// Показать модальное окно профиля
-function showProfileModal() {
-    elements.profileModal.style.display = 'flex';
-}
 
-// Скрыть модальное окно профиля
-function hideProfileModal() {
-    elements.profileModal.style.display = 'none';
-}
 
 // Показать бургер меню
 function showBurgerMenu() {
@@ -437,102 +495,17 @@ function hideBurgerMenu() {
     document.body.style.overflow = ''; // Возвращаем скролл
 }
 
-// Обновить информацию профиля
-function updateProfileInfo() {
-    if (appState.userData) {
-        const user = appState.userData;
 
-        // Обновляем имя и username
-        const fullName = user.last_name ? `${user.first_name} ${user.last_name}` : user.first_name;
-        elements.profileName.textContent = fullName;
-        elements.profileUsername.textContent = `@${user.username}`;
-
-        // Обновляем бейдж (Premium или обычный пользователь)
-        if (user.is_premium) {
-            elements.profileBadge.textContent = 'Premium';
-            elements.profileBadge.style.background = 'linear-gradient(45deg, #ffd700, #ffed4e)';
-        } else {
-            elements.profileBadge.textContent = 'User';
-            elements.profileBadge.style.background = 'linear-gradient(45deg, #667eea, #764ba2)';
-        }
-
-        // Обновляем аватар (используем первую букву имени или фото)
-        if (user.photo_url) {
-            // Если есть фото, загружаем его
-            elements.avatarInner.innerHTML = `<img src="${user.photo_url}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
-        } else {
-            // Иначе используем первую букву имени
-            const firstLetter = user.first_name.charAt(0).toUpperCase();
-            elements.avatarInner.textContent = firstLetter;
-        }
-
-        // Обновляем статус (онлайн/оффлайн)
-        const lastActive = new Date(user.last_active);
-        const now = new Date();
-        const diffMinutes = Math.floor((now - lastActive) / (1000 * 60));
-
-        if (diffMinutes < 5) {
-            elements.statusIndicator.style.background = '#4ade80'; // Зеленый - онлайн
-        } else if (diffMinutes < 60) {
-            elements.statusIndicator.style.background = '#fbbf24'; // Желтый - недавно
-        } else {
-            elements.statusIndicator.style.background = '#ef4444'; // Красный - оффлайн
-        }
-
-        // Обновляем статистику
-        elements.searchCount.textContent = user.search_count || 0;
-        elements.favoritesCount.textContent = user.favorites_count || 0;
-        elements.commandsUsed.textContent = user.commands_used || 0;
-
-        // Форматируем дату последней активности
-        if (user.last_active) {
-            const diffHours = Math.floor((now - lastActive) / (1000 * 60 * 60));
-
-            if (diffMinutes < 5) {
-                elements.lastActive.textContent = 'Сейчас';
-            } else if (diffHours < 1) {
-                elements.lastActive.textContent = `${diffMinutes}м назад`;
-            } else if (diffHours < 24) {
-                elements.lastActive.textContent = `${diffHours}ч назад`;
-            } else {
-                const diffDays = Math.floor(diffHours / 24);
-                elements.lastActive.textContent = `${diffDays}д назад`;
-            }
-        } else {
-            elements.lastActive.textContent = '-';
-        }
-
-        // Обновляем достижения
-        updateAchievements(user.achievements || []);
-    }
-}
-
-// Обновить достижения
-function updateAchievements(achievements) {
-    const achievementItems = elements.achievementsGrid.querySelectorAll('.achievement-item');
-
-    achievementItems.forEach((item, index) => {
-        const achievementId = getAchievementId(index);
-        if (achievements.includes(achievementId)) {
-            item.classList.add('unlocked');
-        } else {
-            item.classList.remove('unlocked');
-        }
-    });
-}
-
-// Получить ID достижения по индексу
-function getAchievementId(index) {
-    const achievements = ['first_search', 'collector', 'expert'];
-    return achievements[index] || '';
-}
 
 // Обработка ввода в поиск
 function handleSearchInput(event) {
     const query = event.target.value.toLowerCase().trim();
+    const searchSuggestions = document.getElementById('searchSuggestions');
+    
+    if (!searchSuggestions) return;
 
     if (query.length < 2) {
-        elements.searchSuggestions.innerHTML = '';
+        searchSuggestions.innerHTML = '';
         return;
     }
 
@@ -542,6 +515,9 @@ function handleSearchInput(event) {
 
 // Показать подсказки поиска
 function showSearchSuggestions(query) {
+    const searchSuggestions = document.getElementById('searchSuggestions');
+    if (!searchSuggestions) return;
+    
     const suggestions = [];
 
     // Добавляем команды
@@ -609,7 +585,7 @@ function showSearchSuggestions(query) {
     suggestions.splice(3);
 
     // Отображаем подсказки
-    elements.searchSuggestions.innerHTML = suggestions.map(suggestion => `
+    searchSuggestions.innerHTML = suggestions.map(suggestion => `
         <div class="suggestion-item" data-type="${suggestion.type}" data-text="${suggestion.text}">
             <div class="suggestion-icon">${suggestion.icon}</div>
             <div class="suggestion-content">
@@ -620,10 +596,13 @@ function showSearchSuggestions(query) {
     `).join('');
 
     // Добавляем обработчики кликов
-    elements.searchSuggestions.querySelectorAll('.suggestion-item').forEach(item => {
+    searchSuggestions.querySelectorAll('.suggestion-item').forEach(item => {
         item.addEventListener('click', () => {
-            elements.searchInput.value = item.dataset.text;
-            elements.searchSuggestions.innerHTML = '';
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = item.dataset.text;
+            }
+            searchSuggestions.innerHTML = '';
             performSearch();
         });
     });
@@ -631,7 +610,13 @@ function showSearchSuggestions(query) {
 
 // Выполнить поиск
 function performSearch() {
-    const query = elements.searchInput.value.toLowerCase().trim();
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) {
+        console.log('Search input not found');
+        return;
+    }
+    
+    const query = searchInput.value.toLowerCase().trim();
 
     if (query.length < 2) {
         hideSearchResults();
@@ -660,8 +645,10 @@ function performSearchLogic(query) {
     const words = query.split(/\s+/).filter(Boolean);
     if (words.length === 0) return results;
 
+
+
     // Поиск по командам
-    if (appState.commands.length > 0) {
+    if (appState.commands && appState.commands.length > 0) {
         const matchingCommands = appState.commands.filter(cmd => {
             const text = `${cmd.command} ${cmd.description} ${cmd.category}`.toLowerCase();
             return words.some(word => text.includes(word));
@@ -675,7 +662,7 @@ function performSearchLogic(query) {
     }
 
     // Поиск по GPS данным
-    if (appState.gpsData) {
+    if (appState.gpsData && Object.keys(appState.gpsData).length > 0) {
         Object.entries(appState.gpsData).forEach(([category, locations]) => {
             if (Array.isArray(locations)) {
                 const matchingLocations = locations.filter(location => {
@@ -693,7 +680,7 @@ function performSearchLogic(query) {
     }
 
     // Поиск по RP терминам
-    if (appState.rpTerms) {
+    if (appState.rpTerms && Object.keys(appState.rpTerms).length > 0) {
         Object.entries(appState.rpTerms).forEach(([term, description]) => {
             // Проверяем оригинальный термин
             const text = `${term} ${description}`.toLowerCase();
@@ -722,7 +709,7 @@ function performSearchLogic(query) {
     }
 
     // Поиск по обязанностям хелпера
-    if (appState.helperDuties) {
+    if (appState.helperDuties && Object.keys(appState.helperDuties).length > 0) {
         Object.entries(appState.helperDuties).forEach(([section, duties]) => {
             if (Array.isArray(duties)) {
                 const matchingDuties = duties.filter(duty => {
@@ -740,7 +727,7 @@ function performSearchLogic(query) {
     }
 
     // Поиск по правилам чата
-    if (appState.chatRules) {
+    if (appState.chatRules && Object.keys(appState.chatRules).length > 0) {
         Object.entries(appState.chatRules).forEach(([rule, description]) => {
             const text = `${rule} ${description}`.toLowerCase();
             if (words.some(word => text.includes(word))) {
@@ -755,7 +742,7 @@ function performSearchLogic(query) {
     }
 
     // Поиск по правилам мута
-    if (appState.muteRules) {
+    if (appState.muteRules && Object.keys(appState.muteRules).length > 0) {
         Object.entries(appState.muteRules).forEach(([rule, description]) => {
             const text = `${rule} ${description}`.toLowerCase();
             if (words.some(word => text.includes(word))) {
@@ -769,29 +756,40 @@ function performSearchLogic(query) {
         });
     }
 
+
     return results;
 }
 
 // Отобразить результаты поиска
 function displaySearchResults(results) {
     if (results.length === 0) {
-        elements.resultsTitle.textContent = 'Ничего не найдено';
-        elements.resultsContainer.innerHTML = '<div class="no-results">Попробуйте изменить запрос</div>';
+        searchModal.setContent(`
+            <div class="no-search-results">
+                <div class="no-search-results-icon">🔍</div>
+                <div class="no-search-results-title">Ничего не найдено</div>
+                <div class="no-search-results-desc">Попробуйте изменить запрос</div>
+            </div>
+        `);
     } else {
-        elements.resultsTitle.textContent = `Найдено: ${results.length}`;
-        elements.resultsContainer.innerHTML = results.map(result => `
-            <div class="result-item">
-                <div class="result-icon">${getResultIcon(result.type)}</div>
-                <div class="result-content">
-                    <div class="result-title">${result.title}</div>
-                    <div class="result-description">${result.description}</div>
-                    <div class="result-category">${result.category}</div>
-                </div>
+        const resultsHtml = results.map(result => `
+            <div class="search-result-item" onclick="handleSearchResultClick('${result.type}', '${result.title}')">
+                <div class="search-result-title">${result.title}</div>
+                <div class="search-result-desc">${result.description}</div>
+                <div class="search-result-category">${result.category}</div>
             </div>
         `).join('');
+        
+        searchModal.setContent(resultsHtml);
     }
 
-    showSearchResults();
+    searchModal.show();
+}
+
+// Обработка клика по результату поиска
+function handleSearchResultClick(type, title) {
+    console.log('Выбран результат:', type, title);
+    // Здесь можно добавить логику для обработки выбора результата
+    searchModal.hide();
 }
 
 // Получить иконку для результата
@@ -809,21 +807,33 @@ function getResultIcon(type) {
 
 // Показать результаты поиска
 function showSearchResults() {
-    hideAllSections();
-    elements.resultsSection.style.display = 'block';
+    const resultsSection = document.getElementById('resultsSection');
+    if (resultsSection) {
+        resultsSection.style.display = 'block';
+    }
     appState.currentSection = 'search';
 }
 
 // Скрыть результаты поиска
 function hideSearchResults() {
-    elements.resultsSection.style.display = 'none';
-    elements.searchSuggestions.innerHTML = '';
+    const resultsSection = document.getElementById('resultsSection');
+    const searchSuggestions = document.getElementById('searchSuggestions');
+    
+    if (resultsSection) {
+        resultsSection.style.display = 'none';
+    }
+    if (searchSuggestions) {
+        searchSuggestions.innerHTML = '';
+    }
 }
 
 // Очистить результаты поиска
 function clearSearchResults() {
-    elements.searchInput.value = '';
-    hideSearchResults();
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    searchModal.hide();
     showMainSection();
 }
 
@@ -834,13 +844,12 @@ async function updateUserSearchCount() {
     try {
         const newCount = (appState.userData.search_count || 0) + 1;
         appState.userData.search_count = newCount;
-        elements.searchCount.textContent = newCount;
+        if (elements.searchCount) {
+            elements.searchCount.textContent = newCount;
+        }
 
         // Сохраняем в localStorage
         localStorage.setItem('tg_user_search_count', JSON.stringify(newCount));
-
-        // Проверяем достижения
-        checkAchievements();
 
         // Обновляем время последней активности
         appState.userData.last_active = new Date().toISOString();
@@ -858,82 +867,19 @@ function updateUserCommandsUsed() {
     try {
         const newCount = (appState.userData.commands_used || 0) + 1;
         appState.userData.commands_used = newCount;
-        elements.commandsUsed.textContent = newCount;
+        if (elements.commandsUsed) {
+            elements.commandsUsed.textContent = newCount;
+        }
 
         // Сохраняем в localStorage
         localStorage.setItem('tg_user_commands_used', JSON.stringify(newCount));
-
-        // Проверяем достижения
-        checkAchievements();
 
     } catch (error) {
         console.error('Ошибка обновления счетчика команд:', error);
     }
 }
 
-// Проверить и обновить достижения
-function checkAchievements() {
-    if (!appState.userData) return;
 
-    const achievements = appState.userData.achievements || [];
-    const newAchievements = [];
-
-    // Достижение за первые поиски
-    if (appState.userData.search_count >= 1 && !achievements.includes('first_search')) {
-        newAchievements.push('first_search');
-    }
-
-    // Достижение за коллекционера (10 избранных)
-    if (appState.userData.favorites_count >= 10 && !achievements.includes('collector')) {
-        newAchievements.push('collector');
-    }
-
-    // Достижение за эксперта (50 команд)
-    if (appState.userData.commands_used >= 50 && !achievements.includes('expert')) {
-        newAchievements.push('expert');
-    }
-
-    // Добавляем новые достижения
-    if (newAchievements.length > 0) {
-        appState.userData.achievements = [...achievements, ...newAchievements];
-        localStorage.setItem('tg_user_achievements', JSON.stringify(appState.userData.achievements));
-        updateAchievements(appState.userData.achievements);
-
-        // Показываем уведомление о новом достижении
-        showAchievementNotification(newAchievements[0]);
-    }
-}
-
-// Показать уведомление о достижении
-function showAchievementNotification(achievementId) {
-    const achievementNames = {
-        'first_search': 'Первые поиски',
-        'collector': 'Коллекционер',
-        'expert': 'Эксперт'
-    };
-
-    const achievementName = achievementNames[achievementId] || 'Новое достижение';
-
-    // Создаем уведомление
-    const notification = document.createElement('div');
-    notification.className = 'achievement-notification';
-    notification.innerHTML = `
-        <div class="notification-content">
-            <div class="notification-icon">🏆</div>
-            <div class="notification-text">
-                <div class="notification-title">Достижение разблокировано!</div>
-                <div class="notification-desc">${achievementName}</div>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(notification);
-
-    // Удаляем уведомление через 3 секунды
-    setTimeout(() => {
-        notification.remove();
-    }, 3000);
-}
 
 // Обработка клика по действию
 function handleActionClick(action) {
@@ -1122,13 +1068,262 @@ function showMainSection() {
 
 // Показать загрузку
 function showLoading() {
-    elements.loadingOverlay.style.display = 'flex';
+    if (elements.loadingOverlay) {
+        elements.loadingOverlay.style.display = 'flex';
+    }
 }
 
 // Скрыть загрузку
 function hideLoading() {
-    elements.loadingOverlay.style.display = 'none';
+    if (elements.loadingOverlay) {
+        elements.loadingOverlay.style.display = 'none';
+    }
 }
 
 // Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', initializeApp); 
+document.addEventListener('DOMContentLoaded', initializeApp);
+
+// ===== РЕАЛЬНАЯ СИСТЕМА СТАТИСТИКИ =====
+
+// Инициализация статистики
+function initStatistics() {
+    if (!localStorage.getItem('miniAppStats')) {
+        localStorage.setItem('miniAppStats', JSON.stringify({
+            totalSearches: 0,
+            totalCommandsUsed: 0,
+            totalCategoriesViewed: 0,
+            totalFavorites: 0,
+            userSessions: 0,
+            searchHistory: [],
+            commandHistory: [],
+            categoryHistory: [],
+            lastActivity: new Date().toISOString(),
+            firstVisit: new Date().toISOString()
+        }));
+    }
+}
+
+// Получение статистики
+function getStatistics() {
+    const stats = JSON.parse(localStorage.getItem('miniAppStats') || '{}');
+    return stats;
+}
+
+// Обновление статистики
+function updateStatistics(key, value) {
+    const stats = getStatistics();
+    stats[key] = value;
+    stats.lastActivity = new Date().toISOString();
+    localStorage.setItem('miniAppStats', JSON.stringify(stats));
+}
+
+// Увеличение счетчика
+function incrementStat(key) {
+    const stats = getStatistics();
+    stats[key] = (stats[key] || 0) + 1;
+    stats.lastActivity = new Date().toISOString();
+    localStorage.setItem('miniAppStats', JSON.stringify(stats));
+}
+
+// Отслеживание поиска
+function trackSearch(query) {
+    incrementStat('totalSearches');
+    
+    const stats = getStatistics();
+    stats.searchHistory = stats.searchHistory || [];
+    stats.searchHistory.push({
+        query: query,
+        timestamp: new Date().toISOString()
+    });
+    
+    // Ограничиваем историю последними 100 поисками
+    if (stats.searchHistory.length > 100) {
+        stats.searchHistory = stats.searchHistory.slice(-100);
+    }
+    
+    localStorage.setItem('miniAppStats', JSON.stringify(stats));
+}
+
+// Отслеживание использования команды
+function trackCommand(command) {
+    incrementStat('totalCommandsUsed');
+    
+    const stats = getStatistics();
+    stats.commandHistory = stats.commandHistory || [];
+    stats.commandHistory.push({
+        command: command,
+        timestamp: new Date().toISOString()
+    });
+    
+    // Ограничиваем историю последними 100 командами
+    if (stats.commandHistory.length > 100) {
+        stats.commandHistory = stats.commandHistory.slice(-100);
+    }
+    
+    localStorage.setItem('miniAppStats', JSON.stringify(stats));
+}
+
+// Отслеживание просмотра категории
+function trackCategory(category) {
+    incrementStat('totalCategoriesViewed');
+    
+    const stats = getStatistics();
+    stats.categoryHistory = stats.categoryHistory || [];
+    stats.categoryHistory.push({
+        category: category,
+        timestamp: new Date().toISOString()
+    });
+    
+    // Ограничиваем историю последними 50 категориями
+    if (stats.categoryHistory.length > 50) {
+        stats.categoryHistory = stats.categoryHistory.slice(-50);
+    }
+    
+    localStorage.setItem('miniAppStats', JSON.stringify(stats));
+}
+
+// Отслеживание сессии
+function trackSession() {
+    const stats = getStatistics();
+    const now = new Date();
+    const lastActivity = new Date(stats.lastActivity || 0);
+    
+    // Если прошло больше 30 минут, считаем новой сессией
+    if (now.getTime() - lastActivity.getTime() > 30 * 60 * 1000) {
+        incrementStat('userSessions');
+    }
+    
+    stats.lastActivity = now.toISOString();
+    localStorage.setItem('miniAppStats', JSON.stringify(stats));
+}
+
+// Получение топ команд
+function getTopCommands() {
+    const stats = getStatistics();
+    const commandCounts = {};
+    
+    if (stats.commandHistory) {
+        stats.commandHistory.forEach(item => {
+            commandCounts[item.command] = (commandCounts[item.command] || 0) + 1;
+        });
+    }
+    
+    return Object.entries(commandCounts)
+        .map(([command, count]) => ({ name: command, count: count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+}
+
+// Получение топ категорий
+function getTopCategories() {
+    const stats = getStatistics();
+    const categoryCounts = {};
+    
+    if (stats.categoryHistory) {
+        stats.categoryHistory.forEach(item => {
+            categoryCounts[item.category] = (categoryCounts[item.category] || 0) + 1;
+        });
+    }
+    
+    return Object.entries(categoryCounts)
+        .map(([category, count]) => ({ name: category, count: count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+}
+
+// Получение активности за неделю
+function getWeeklyActivity() {
+    const stats = getStatistics();
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    const dailyActivity = {};
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(weekAgo.getTime() + i * 24 * 60 * 60 * 1000);
+        const dateStr = date.toISOString().split('T')[0];
+        dailyActivity[dateStr] = 0;
+    }
+    
+    // Подсчитываем активность по дням
+    const allHistory = [
+        ...(stats.searchHistory || []),
+        ...(stats.commandHistory || []),
+        ...(stats.categoryHistory || [])
+    ];
+    
+    allHistory.forEach(item => {
+        const itemDate = new Date(item.timestamp).toISOString().split('T')[0];
+        if (dailyActivity[itemDate] !== undefined) {
+            dailyActivity[itemDate]++;
+        }
+    });
+    
+    return Object.values(dailyActivity);
+}
+
+// Отправка статистики на сервер (если доступен)
+function sendStatsToServer() {
+    const stats = getStatistics();
+    
+    // Пытаемся отправить на сервер
+    fetch('/api/statistics/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(stats)
+    }).catch(error => {
+        console.log('Сервер недоступен, статистика сохранена локально');
+    });
+}
+
+// Отслеживание использования команды
+function trackCommandUsage(commandName) {
+    trackCommand(commandName);
+    sendStatsToServer();
+}
+
+// Отслеживание использования категории
+function trackCategoryUsage(categoryName) {
+    trackCategory(categoryName);
+    sendStatsToServer();
+}
+
+// Отслеживание поиска
+function trackSearchUsage(searchQuery) {
+    trackSearch(searchQuery);
+    sendStatsToServer();
+}
+
+// Инициализация статистики при загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    initStatistics();
+    trackSession();
+});
+
+// Обновляем существующие функции для отслеживания
+const originalPerformSearch = performSearch;
+performSearch = function() {
+    const query = elements.searchInput.value.trim();
+    if (query) {
+        trackSearchUsage(query);
+    }
+    return originalPerformSearch.apply(this, arguments);
+};
+
+const originalHandleActionClick = handleActionClick;
+handleActionClick = function(action) {
+    if (action.type === 'command') {
+        trackCommandUsage(action.command);
+    }
+    return originalHandleActionClick.apply(this, arguments);
+};
+
+const originalShowCategoryCommands = showCategoryCommands;
+showCategoryCommands = function(category) {
+    trackCategoryUsage(category.name);
+    return originalShowCategoryCommands.apply(this, arguments);
+};
+
+// Отслеживаем активность каждые 5 минут
+setInterval(trackSession, 5 * 60 * 1000); 

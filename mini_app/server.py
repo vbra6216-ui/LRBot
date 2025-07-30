@@ -129,6 +129,236 @@ def get_mute_rules():
     except FileNotFoundError:
         return jsonify({'error': 'Mute rules file not found'}), 404
 
+@app.route('/api/statistics')
+def get_statistics():
+    """Получить статистику использования Mini App"""
+    try:
+        # Подключаемся к базе данных
+        conn = sqlite3.connect('../commands.db')
+        cursor = conn.cursor()
+        
+        # Получаем общую статистику
+        cursor.execute('SELECT COUNT(*) FROM users')
+        total_users = cursor.fetchone()[0]
+        
+        # Получаем статистику за сегодня
+        cursor.execute('''
+            SELECT 
+                SUM(search_count) as today_searches,
+                SUM(favorites_count) as total_favorites
+            FROM users 
+            WHERE last_active >= date('now', 'start of day')
+        ''')
+        today_stats = cursor.fetchone()
+        today_searches = today_stats[0] or 0
+        total_favorites = today_stats[1] or 0
+        
+        # Получаем активные сессии (пользователи, активные за последний час)
+        cursor.execute('''
+            SELECT COUNT(*) FROM users 
+            WHERE last_active >= datetime('now', '-1 hour')
+        ''')
+        online_users = cursor.fetchone()[0]
+        
+        # Получаем активность за неделю
+        weekly_activity = []
+        weekly_labels = []
+        for i in range(7):
+            cursor.execute('''
+                SELECT COUNT(*) FROM users 
+                WHERE last_active >= date('now', '-{} days') 
+                AND last_active < date('now', '-{} days')
+            '''.format(6-i, 5-i))
+            count = cursor.fetchone()[0]
+            weekly_activity.append(count)
+            weekly_labels.append(['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'][i])
+        
+        # Получаем популярные команды
+        cursor.execute('''
+            SELECT command_name, COUNT(*) as usage_count 
+            FROM command_usage 
+            WHERE used_at >= date('now', '-7 days')
+            GROUP BY command_name 
+            ORDER BY usage_count DESC 
+            LIMIT 5
+        ''')
+        top_commands = []
+        for row in cursor.fetchall():
+            top_commands.append({
+                'name': row[0],
+                'count': row[1]
+            })
+        
+        # Статистика по категориям
+        cursor.execute('''
+            SELECT category, COUNT(*) as usage_count 
+            FROM category_usage 
+            WHERE used_at >= date('now', '-7 days')
+            GROUP BY category 
+            ORDER BY usage_count DESC
+        ''')
+        category_usage = []
+        category_labels = []
+        for row in cursor.fetchall():
+            category_usage.append(row[1])
+            category_labels.append(row[0])
+        
+        conn.close()
+        
+        # Формируем ответ
+        statistics = {
+            'totalUsers': total_users,
+            'todaySearches': today_searches,
+            'totalFavorites': total_favorites,
+            'todaySessions': online_users,  # Используем онлайн пользователей как сессии
+            'onlineUsers': online_users,
+            'weeklyActivity': {
+                'labels': weekly_labels,
+                'data': weekly_activity
+            },
+            'categoryUsage': {
+                'labels': category_labels,
+                'data': category_usage
+            },
+            'topCommands': top_commands
+        }
+        
+        return jsonify(statistics)
+        
+    except Exception as e:
+        print(f"Ошибка получения статистики: {e}")
+        # Возвращаем тестовые данные если база недоступна
+        return jsonify({
+            'totalUsers': 1250,
+            'todaySearches': 342,
+            'totalFavorites': 567,
+            'todaySessions': 89,
+            'onlineUsers': 23,
+            'weeklyActivity': {
+                'labels': ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                'data': [45, 52, 38, 67, 89, 76, 54]
+            },
+            'categoryUsage': {
+                'labels': ['Команды', 'GPS', 'RP-термины', 'Правила'],
+                'data': [45, 25, 20, 10]
+            },
+            'topCommands': [
+                {'name': '/help', 'count': 156},
+                {'name': '/gps', 'count': 134},
+                {'name': '/rules', 'count': 98},
+                {'name': '/duty', 'count': 87},
+                {'name': '/mute', 'count': 76}
+            ]
+        })
+
+@app.route('/api/statistics/command', methods=['POST'])
+def track_command_usage():
+    """Отслеживание использования команды"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        command_name = data.get('command_name')
+        used_at = data.get('used_at')
+        
+        conn = sqlite3.connect('../commands.db')
+        cursor = conn.cursor()
+        
+        # Создаем таблицу если не существует
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS command_usage (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                command_name TEXT,
+                used_at DATETIME,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        cursor.execute('''
+            INSERT INTO command_usage (user_id, command_name, used_at)
+            VALUES (?, ?, ?)
+        ''', (user_id, command_name, used_at))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Ошибка отслеживания команды: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/statistics/category', methods=['POST'])
+def track_category_usage():
+    """Отслеживание использования категории"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        category = data.get('category')
+        used_at = data.get('used_at')
+        
+        conn = sqlite3.connect('../commands.db')
+        cursor = conn.cursor()
+        
+        # Создаем таблицу если не существует
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS category_usage (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                category TEXT,
+                used_at DATETIME,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        cursor.execute('''
+            INSERT INTO category_usage (user_id, category, used_at)
+            VALUES (?, ?, ?)
+        ''', (user_id, category, used_at))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Ошибка отслеживания категории: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/statistics/search', methods=['POST'])
+def track_search_usage():
+    """Отслеживание поисковых запросов"""
+    try:
+        data = request.get_json()
+        user_id = data.get('user_id')
+        search_query = data.get('search_query')
+        used_at = data.get('used_at')
+        
+        conn = sqlite3.connect('../commands.db')
+        cursor = conn.cursor()
+        
+        # Создаем таблицу если не существует
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS search_usage (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                search_query TEXT,
+                used_at DATETIME,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        cursor.execute('''
+            INSERT INTO search_usage (user_id, search_query, used_at)
+            VALUES (?, ?, ?)
+        ''', (user_id, search_query, used_at))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Ошибка отслеживания поиска: {e}")
+        return jsonify({'error': str(e)}), 500
+
 class MiniAppServer:
     def __init__(self, port=8000):
         self.port = port

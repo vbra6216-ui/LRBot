@@ -1,0 +1,23 @@
+{
+  "totalUsers": 1250,
+  "todaySearches": 342,
+  "totalFavorites": 567,
+  "todaySessions": 89,
+  "onlineUsers": 23,
+  "weeklyActivity": {
+    "labels": ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
+    "data": [45, 52, 38, 67, 89, 76, 54]
+  },
+  "categoryUsage": {
+    "labels": ["Команды", "GPS", "RP-термины", "Правила", "Обязанности"],
+    "data": [45, 25, 20, 15, 10]
+  },
+  "topCommands": [
+    {"name": "/help", "count": 156},
+    {"name": "/gps", "count": 134},
+    {"name": "/rules", "count": 98},
+    {"name": "/duty", "count": 87},
+    {"name": "/mute", "count": 76}
+  ],
+  "lastUpdated": "2024-01-15T12:00:00Z"
+} 

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выход</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        .exit-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .exit-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .exit-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #7B61FF;
+        }
+        
+        .exit-message {
+            font-size: 1rem;
+            color: #e0e0f0;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+        
+        .exit-button {
+            background: linear-gradient(135deg, #7B61FF 0%, #9B7DFF 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .exit-button:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="exit-container">
+        <div class="exit-icon">👋</div>
+        <div class="exit-title">До свидания!</div>
+        <div class="exit-message">Спасибо за использование Helper Bot</div>
+        <button class="exit-button" onclick="closeApp()">Закрыть приложение</button>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        let tg = window.Telegram.WebApp;
+        if (tg) {
+            tg.ready();
+            tg.expand();
+        }
+
+        function closeApp() {
+            if (tg) {
+                tg.close();
+            } else {
+                // Fallback для тестирования
+                window.close();
+                // Если window.close() не работает, перенаправляем на главную
+                window.location.href = 'choice.html';
+            }
+        }
+
+        // Автоматическое закрытие через 3 секунды
+        setTimeout(() => {
+            closeApp();
+        }, 3000);
+    </script>
+</body>
+</html> 

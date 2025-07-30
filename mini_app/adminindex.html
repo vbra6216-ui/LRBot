@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Bot</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="burger-menu.js"></script>
+    <script src="admin-app.js"></script>
+    <style>
+        
+        .commands-section {
+            background: #23244a;
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 12px rgba(255, 0, 0, 0.10);
+        }
+        
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .command-card {
+            background: #2a2c5a;
+            border-radius: 12px;
+            padding: 16px;
+            border-left: 3px solid #FF0000;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .command-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(255, 0, 0, 0.2);
+        }
+        
+        .command-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #FF0000;
+        }
+        
+        .command-desc {
+            font-size: 0.9em;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+        
+        .empty-section {
+            background: #23244a;
+            border-radius: 18px;
+            padding: 40px 24px;
+            text-align: center;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 12px rgba(255, 0, 0, 0.10);
+        }
+        
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #FF0000 0%, #FF3333 100%);
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(255, 0, 0, 0.3);
+        }
+        
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #FF0000;
+        }
+        
+                 .empty-description {
+             font-size: 1rem;
+             opacity: 0.7;
+             line-height: 1.5;
+         }
+         
+         .return-section {
+             margin-bottom: 24px;
+         }
+         
+         .return-button {
+             display: flex;
+             align-items: center;
+             gap: 12px;
+             padding: 16px 24px;
+             background: linear-gradient(135deg, #FF0000 0%, #FF3333 100%);
+             color: white;
+             text-decoration: none;
+             border-radius: 12px;
+             font-weight: 600;
+             transition: transform 0.2s, box-shadow 0.2s;
+             box-shadow: 0 4px 16px rgba(255, 0, 0, 0.3);
+         }
+         
+         .return-button:hover {
+             transform: translateY(-2px);
+             box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+         }
+
+        /* Modal Search Results */
+        .search-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .search-modal.active {
+            display: flex;
+        }
+
+        .search-modal-content {
+            background: #1a1b2e;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(255, 0, 0, 0.15);
+            border: 2px solid #FF4444;
+            position: relative;
+        }
+
+        .search-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 68, 68, 0.2);
+        }
+
+        .search-modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #FF6666;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-modal-close {
+            background: none;
+            border: none;
+            color: #FF6666;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .search-modal-close:hover {
+            background: rgba(255, 68, 68, 0.1);
+            transform: scale(1.1);
+        }
+
+        .search-results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .search-result-item {
+            background: #2a2c5a;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #FF6666;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .search-result-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.2);
+        }
+
+        .search-result-title {
+            font-weight: 600;
+            color: #FF6666;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .search-result-desc {
+            color: #e0e0f0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            opacity: 0.8;
+        }
+
+        .search-result-category {
+            background: rgba(255, 68, 68, 0.2);
+            color: #FF6666;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .no-search-results {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .no-search-results-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .no-search-results-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #FF6666;
+            margin-bottom: 10px;
+        }
+
+        .no-search-results-desc {
+            color: #e0e0f0;
+            opacity: 0.7;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1 class="logo">👑 Admin Bot</h1>
+                    <p class="subtitle">Главный помощник и справочник</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon" id="burgerMenuBtn" title="Меню">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 12H21M3 6H21M3 18H21" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" placeholder="Поиск..." id="searchInput">
+                        <button class="search-btn" onclick="performSearch()">Найти</button>
+                    </div>
+                </div>
+                <div style="height: 1px; background: rgba(255, 255, 255, 0.1); margin: 0 auto; max-width: 600px; margin-top: 1rem;"></div>
+            </div>
+
+            <!-- Quick Actions Section -->
+            <div class="quick-actions">
+                <div class="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Быстрые действия
+                </div>
+                <div class="action-grid">
+                    <!-- Пустая карточка 1 -->
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="3" width="18" height="18" rx="2" stroke="#FF0000" stroke-width="2"/>
+                                <path d="M9 9H15" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M9 12H15" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M9 15H15" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="action-text">Test</div>
+                        <div class="action-desc">Test</div>
+                    </div>
+                    
+                    <!-- Пустая карточка 2 -->
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="3" width="18" height="18" rx="2" stroke="#FF0000" stroke-width="2"/>
+                                <path d="M9 9H15" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M9 12H15" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M9 15H15" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="action-text">Test</div>
+                        <div class="action-desc">Test</div>
+                    </div>
+                    
+                    <!-- Пустая карточка 3 -->
+                    <div class="action-card">
+                        <div class="action-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="3" width="18" height="18" rx="2" stroke="#FF0000" stroke-width="2"/>
+                                <path d="M9 9H15" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M9 12H15" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M9 15H15" stroke="#FF0000" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="action-text">Test</div>
+                        <div class="action-desc">Test</div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </main>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="search-modal" id="searchModal">
+        <div class="search-modal-content">
+            <div class="search-modal-header">
+                <div class="search-modal-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#FF0000" stroke-width="2"/>
+                    </svg>
+                    Результаты поиска
+                </div>
+                <button class="search-modal-close" id="closeSearchModal">×</button>
+            </div>
+            <div class="search-results-list" id="searchResultsList">
+                <!-- Результаты поиска будут здесь -->
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html> 
