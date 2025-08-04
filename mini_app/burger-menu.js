@@ -251,11 +251,13 @@ class BurgerMenu {
             let startY = 0;
             let startX = 0;
             let isSwiping = false;
+            let isScrolling = false;
             
             this.menu.addEventListener('touchstart', (e) => {
                 startY = e.touches[0].clientY;
                 startX = e.touches[0].clientX;
                 isSwiping = false;
+                isScrolling = false;
             });
             
             this.menu.addEventListener('touchmove', (e) => {
@@ -266,8 +268,22 @@ class BurgerMenu {
                 const diffY = startY - currentY;
                 const diffX = startX - currentX;
                 
-                // Если свайп вниз больше чем в сторону, закрываем меню
-                if (diffY > 30 && Math.abs(diffY) > Math.abs(diffX) && !isSwiping) {
+                // Проверяем, является ли это прокруткой содержимого меню
+                const menuContent = e.target.closest('.burger-menu-content');
+                if (menuContent) {
+                    const scrollTop = menuContent.scrollTop;
+                    const scrollHeight = menuContent.scrollHeight;
+                    const clientHeight = menuContent.clientHeight;
+                    
+                    // Если есть возможность прокрутки и пользователь прокручивает
+                    if (scrollHeight > clientHeight) {
+                        isScrolling = true;
+                        return; // Не закрываем меню при прокрутке
+                    }
+                }
+                
+                // Если свайп вниз больше чем в сторону и это не прокрутка, закрываем меню
+                if (diffY > 30 && Math.abs(diffY) > Math.abs(diffX) && !isSwiping && !isScrolling) {
                     isSwiping = true;
                     this.closeMenu();
                     startY = 0;
@@ -279,6 +295,7 @@ class BurgerMenu {
                 startY = 0;
                 startX = 0;
                 isSwiping = false;
+                isScrolling = false;
             });
         }
         
