@@ -261,6 +261,203 @@
             color: #e0e0f0;
             opacity: 0.7;
         }
+        
+        /* Мобильная адаптация */
+        @media (max-width: 768px) {
+            .commands-section {
+                padding: 20px;
+                margin-bottom: 24px;
+            }
+            
+            .commands-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .command-card {
+                padding: 14px;
+            }
+            
+            .command-title {
+                font-size: 0.95rem;
+            }
+            
+            .command-desc {
+                font-size: 0.85rem;
+            }
+            
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .category-card {
+                padding: 16px;
+            }
+            
+            .category-icon {
+                font-size: 1.8rem;
+                margin-bottom: 10px;
+            }
+            
+            .category-name {
+                font-size: 0.9rem;
+            }
+            
+            .category-count {
+                font-size: 0.8rem;
+            }
+            
+            .search-container {
+                margin-bottom: 20px;
+            }
+            
+            .search-input {
+                padding: 10px 14px;
+                font-size: 0.95rem;
+            }
+            
+            .search-modal-content {
+                padding: 20px;
+                width: 95%;
+                max-height: 85vh;
+            }
+            
+            .search-modal-title {
+                font-size: 1.3rem;
+            }
+            
+            .search-result-item {
+                padding: 16px;
+            }
+            
+            .search-result-title {
+                font-size: 1rem;
+            }
+            
+            .search-result-desc {
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .commands-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .categories-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .command-card {
+                padding: 12px;
+            }
+            
+            .category-card {
+                padding: 14px;
+            }
+            
+            .category-icon {
+                font-size: 1.6rem;
+            }
+            
+            .category-name {
+                font-size: 0.85rem;
+            }
+            
+            .category-count {
+                font-size: 0.75rem;
+            }
+            
+            .search-input {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .search-modal-content {
+                padding: 16px;
+                width: 98%;
+            }
+            
+            .search-modal-title {
+                font-size: 1.2rem;
+            }
+            
+            .search-result-item {
+                padding: 14px;
+            }
+            
+            .search-result-title {
+                font-size: 0.95rem;
+            }
+            
+            .search-result-desc {
+                font-size: 0.8rem;
+            }
+        }
+        
+        /* Адаптация для ландшафтной ориентации */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .commands-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .categories-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            
+            .command-card {
+                padding: 12px;
+            }
+            
+            .category-card {
+                padding: 12px;
+            }
+            
+            .category-icon {
+                font-size: 1.5rem;
+                margin-bottom: 8px;
+            }
+            
+            .category-name {
+                font-size: 0.8rem;
+            }
+            
+            .category-count {
+                font-size: 0.7rem;
+            }
+        }
+        
+        /* Улучшенная поддержка жестов */
+        @media (max-width: 768px) {
+            .command-card,
+            .category-card,
+            .search-result-item {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+            
+            .command-card:active,
+            .category-card:active,
+            .search-result-item:active {
+                transform: scale(0.98);
+                transition: transform 0.1s ease;
+            }
+            
+            .search-modal-close {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+            
+            .search-modal-close:active {
+                transform: scale(0.9);
+                transition: transform 0.1s ease;
+            }
+        }
 
     </style>
 </head>

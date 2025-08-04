@@ -191,10 +191,26 @@ class BurgerMenu {
     initEventListeners() {
         if (this.menuBtn) {
             this.menuBtn.addEventListener('click', () => this.openMenu());
+            // Добавляем поддержку touch событий для мобильных
+            this.menuBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this.menuBtn.style.transform = 'scale(0.95)';
+            });
+            this.menuBtn.addEventListener('touchend', () => {
+                this.menuBtn.style.transform = '';
+            });
         }
         
         if (this.closeBtn) {
             this.closeBtn.addEventListener('click', () => this.closeMenu());
+            // Добавляем поддержку touch событий для мобильных
+            this.closeBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this.closeBtn.style.transform = 'scale(0.95)';
+            });
+            this.closeBtn.addEventListener('touchend', () => {
+                this.closeBtn.style.transform = '';
+            });
         }
         
         if (this.menu) {
@@ -203,18 +219,82 @@ class BurgerMenu {
                     this.closeMenu();
                 }
             });
+            
+            // Добавляем поддержку свайпа для закрытия меню на мобильных
+            let startY = 0;
+            let startX = 0;
+            
+            this.menu.addEventListener('touchstart', (e) => {
+                startY = e.touches[0].clientY;
+                startX = e.touches[0].clientX;
+            });
+            
+            this.menu.addEventListener('touchmove', (e) => {
+                if (!startY || !startX) return;
+                
+                const currentY = e.touches[0].clientY;
+                const currentX = e.touches[0].clientX;
+                const diffY = startY - currentY;
+                const diffX = startX - currentX;
+                
+                // Если свайп вниз больше чем в сторону, закрываем меню
+                if (diffY > 50 && Math.abs(diffY) > Math.abs(diffX)) {
+                    this.closeMenu();
+                    startY = 0;
+                    startX = 0;
+                }
+            });
+            
+            this.menu.addEventListener('touchend', () => {
+                startY = 0;
+                startX = 0;
+            });
         }
+        
+        // Добавляем обработчик для закрытия меню при нажатии Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.menu && this.menu.style.display === 'flex') {
+                this.closeMenu();
+            }
+        });
     }
 
     openMenu() {
         if (this.menu) {
             this.menu.style.display = 'flex';
+            // Добавляем анимацию появления
+            this.menu.style.opacity = '0';
+            this.menu.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                this.menu.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                this.menu.style.opacity = '1';
+                this.menu.style.transform = 'scale(1)';
+            }, 10);
+            
+            // Блокируем прокрутку body на мобильных
+            if (window.innerWidth <= 768) {
+                document.body.style.overflow = 'hidden';
+            }
         }
     }
 
     closeMenu() {
         if (this.menu) {
-            this.menu.style.display = 'none';
+            // Добавляем анимацию исчезновения
+            this.menu.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+            this.menu.style.opacity = '0';
+            this.menu.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                this.menu.style.display = 'none';
+                this.menu.style.opacity = '';
+                this.menu.style.transform = '';
+                this.menu.style.transition = '';
+            }, 200);
+            
+            // Разблокируем прокрутку body
+            document.body.style.overflow = '';
         }
     }
 }

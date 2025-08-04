@@ -1290,6 +1290,189 @@ body {
     .burger-menu-item span {
         font-size: 0.75rem;
     }
+    
+    /* Улучшенная мобильная адаптация */
+    .app-container {
+        padding: 0;
+    }
+    
+    .header {
+        padding: 0.5rem 0;
+        margin: 0 2px;
+    }
+    
+    .search-section {
+        padding: 1.5rem 0 1rem;
+    }
+    
+    .quick-actions {
+        padding: 1rem 0;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .action-card {
+        padding: 1.25rem;
+    }
+    
+    .action-icon {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .action-text {
+        font-size: 1rem;
+    }
+    
+    .action-desc {
+        font-size: 0.85rem;
+    }
+    
+    .results-section {
+        padding: 1rem 0;
+    }
+    
+    .results-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .result-group {
+        margin-bottom: 1rem;
+    }
+    
+    .result-group-title {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+    
+    .result-item {
+        padding: 0.75rem 1rem;
+    }
+    
+    .result-title {
+        font-size: 0.95rem;
+    }
+    
+    .result-description {
+        font-size: 0.85rem;
+    }
+    
+    .categories-section {
+        padding: 1rem 0;
+    }
+    
+    .section-header h2 {
+        font-size: 1.2rem;
+    }
+    
+    .btn-back {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    
+    .content-section {
+        padding: 1rem 0;
+    }
+    
+    .content-container {
+        padding: 1.5rem;
+    }
+    
+    .content-section h3 {
+        font-size: 1.1rem;
+    }
+    
+    .content-item {
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .modal-content {
+        padding: 1.5rem;
+        max-width: 90%;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.2rem;
+    }
+    
+    .profile-modal {
+        padding: 1rem;
+    }
+    
+    .profile-section {
+        padding: 1.5rem;
+    }
+    
+    .profile-avatar {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .avatar-inner {
+        font-size: 24px;
+    }
+    
+    .profile-name {
+        font-size: 1.2rem;
+    }
+    
+    .profile-username {
+        font-size: 0.85rem;
+    }
+    
+    .activity-item {
+        padding: 12px;
+    }
+    
+    .activity-value {
+        font-size: 1.1rem;
+    }
+    
+    .activity-label {
+        font-size: 0.75rem;
+    }
+    
+    .achievements-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .achievement-item {
+        padding: 8px 6px;
+    }
+    
+    .achievement-icon {
+        font-size: 20px;
+    }
+    
+    .achievement-text {
+        font-size: 0.65rem;
+    }
+    
+    .premium-features {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .premium-feature {
+        padding: 1.5rem;
+    }
+    
+    .feature-icon {
+        font-size: 2rem;
+    }
+    
+    .feature-text h3 {
+        font-size: 1.1rem;
+    }
+    
+    .feature-text p {
+        font-size: 0.9rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1329,6 +1512,222 @@ body {
     
     .command-desc {
         font-size: 0.7rem;
+    }
+    
+    /* Дополнительные улучшения для очень маленьких экранов */
+    .header-content {
+        padding: 0 0.75rem;
+    }
+    
+    .main-content {
+        padding: 0 0.75rem;
+    }
+    
+    .search-input-wrapper {
+        padding: 0.6rem 0.8rem;
+    }
+    
+    .search-input {
+        font-size: 0.95rem;
+    }
+    
+    .search-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    
+    .action-card {
+        padding: 1rem;
+    }
+    
+    .action-icon {
+        font-size: 1.8rem;
+    }
+    
+    .action-text {
+        font-size: 0.95rem;
+    }
+    
+    .action-desc {
+        font-size: 0.8rem;
+    }
+    
+    .result-item {
+        padding: 0.6rem 0.8rem;
+    }
+    
+    .result-title {
+        font-size: 0.9rem;
+    }
+    
+    .result-description {
+        font-size: 0.8rem;
+    }
+    
+    .btn-back {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .content-container {
+        padding: 1.25rem;
+    }
+    
+    .content-item {
+        padding: 0.6rem;
+    }
+    
+    .modal-content {
+        padding: 1.25rem;
+    }
+    
+    .profile-section {
+        padding: 1.25rem;
+    }
+    
+    .profile-avatar {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .avatar-inner {
+        font-size: 20px;
+    }
+    
+    .profile-name {
+        font-size: 1.1rem;
+    }
+    
+    .activity-item {
+        padding: 10px;
+    }
+    
+    .activity-value {
+        font-size: 1rem;
+    }
+    
+    .activity-label {
+        font-size: 0.7rem;
+    }
+    
+    .achievement-item {
+        padding: 6px 4px;
+    }
+    
+    .achievement-icon {
+        font-size: 18px;
+    }
+    
+    .achievement-text {
+        font-size: 0.6rem;
+    }
+}
+
+/* Улучшенная адаптация для планшетов */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .action-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+    
+    .categories-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+    
+    .commands-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .search-container {
+        max-width: 500px;
+    }
+    
+    .modal-content {
+        max-width: 600px;
+    }
+    
+    .profile-modal {
+        max-width: 520px;
+    }
+}
+
+/* Адаптация для ландшафтной ориентации на мобильных */
+@media (max-width: 768px) and (orientation: landscape) {
+    .header {
+        padding: 0.4rem 0;
+    }
+    
+    .search-section {
+        padding: 1rem 0 0.75rem;
+    }
+    
+    .quick-actions {
+        padding: 0.75rem 0;
+    }
+    
+    .action-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .action-card {
+        padding: 1rem;
+    }
+    
+    .action-icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .action-text {
+        font-size: 0.9rem;
+    }
+    
+    .action-desc {
+        font-size: 0.8rem;
+    }
+    
+    .burger-menu-content {
+        max-height: 80vh;
+    }
+}
+
+/* Улучшенная поддержка жестов на мобильных */
+@media (max-width: 768px) {
+    .action-card,
+    .category-card,
+    .command-item,
+    .result-item {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    
+    .search-input-wrapper,
+    .btn-icon,
+    .search-btn,
+    .btn-clear,
+    .btn-back {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    
+    /* Улучшенная доступность для мобильных */
+    .action-card:active,
+    .category-card:active,
+    .command-item:active,
+    .result-item:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+    
+    .btn-icon:active,
+    .search-btn:active,
+    .btn-clear:active,
+    .btn-back:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
     }
 } 
 

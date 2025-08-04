@@ -1,210 +1,114 @@
-/* Дополнительные мобильные оптимизации для Telegram Mini App */
+МОБИЛЬНЫЕ ОПТИМИЗАЦИИ ДЛЯ MINI APP
+=====================================
 
-/* Оптимизация для устройств с вырезами (notch) */
-@supports (padding: max(0px)) {
-    :root {
-        --safe-area-inset-top: env(safe-area-inset-top);
-        --safe-area-inset-bottom: env(safe-area-inset-bottom);
-        --safe-area-inset-left: env(safe-area-inset-left);
-        --safe-area-inset-right: env(safe-area-inset-right);
-    }
-    
-    .app-container {
-        padding-top: max(0px, var(--safe-area-inset-top));
-        padding-bottom: max(0px, var(--safe-area-inset-bottom));
-        padding-left: max(0px, var(--safe-area-inset-left));
-        padding-right: max(0px, var(--safe-area-inset-right));
-    }
-    
-    .header {
-        padding-top: max(0.6rem, var(--safe-area-inset-top) + 0.2rem);
-    }
-    
-    .modal-content {
-        padding-bottom: max(2rem, var(--safe-area-inset-bottom) + 1rem);
-    }
-}
+ОБЩИЕ УЛУЧШЕНИЯ:
+-----------------
+1. Улучшенная поддержка жестов (touch-action, -webkit-tap-highlight-color)
+2. Адаптивные размеры шрифтов и отступов
+3. Оптимизированные сетки для разных размеров экранов
+4. Поддержка ландшафтной ориентации
+5. Улучшенные анимации для мобильных устройств
 
-/* Улучшенная производительность для мобильных */
-.action-card,
-.category-card,
-.command-item,
-.result-item,
-.btn-icon,
-.search-btn,
-.btn-clear,
-.btn-back {
-    will-change: transform;
-    backface-visibility: hidden;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-}
+СТРАНИЦЫ С ОПТИМИЗАЦИЯМИ:
+---------------------------
 
-/* Оптимизация анимаций для мобильных */
-@media (max-width: 768px) {
-    .action-card,
-    .category-card,
-    .command-item,
-    .result-item {
-        transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
-    }
-    
-    .action-card:active,
-    .category-card:active,
-    .command-item:active,
-    .result-item:active {
-        transform: scale(0.98) translateZ(0);
-    }
-}
+1. styles.css (основные стили):
+   - Добавлены медиа-запросы для 768px, 480px, 360px
+   - Улучшена адаптация для планшетов (769px-1024px)
+   - Добавлена поддержка ландшафтной ориентации
+   - Оптимизированы размеры кнопок, карточек, модальных окон
+   - Улучшена поддержка жестов для всех интерактивных элементов
 
-/* Улучшенная доступность для мобильных */
-@media (max-width: 768px) {
-    .action-card:focus,
-    .category-card:focus,
-    .command-item:focus,
-    .result-item:focus,
-    .btn-icon:focus,
-    .search-btn:focus,
-    .btn-clear:focus,
-    .btn-back:focus {
-        outline: 2px solid #667eea;
-        outline-offset: 2px;
-    }
-    
-    /* Улучшенная читаемость текста */
-    .action-text,
-    .category-name,
-    .command-name,
-    .result-title {
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-    }
-    
-    /* Улучшенные тени для мобильных */
-    .action-card,
-    .category-card,
-    .command-item,
-    .result-item {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    }
-    
-    .action-card:hover,
-    .category-card:hover,
-    .command-item:hover,
-    .result-item:hover {
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-    }
-}
+2. choice.html (страница выбора):
+   - Адаптивные размеры контейнера и кнопок
+   - Оптимизированные отступы для разных экранов
+   - Поддержка ландшафтной ориентации с горизонтальным расположением кнопок
+   - Улучшенная поддержка жестов
 
-/* Оптимизация для устройств с высоким DPI */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .btn-icon,
-    .search-btn,
-    .btn-clear,
-    .btn-back {
-        border-width: 0.5px;
-    }
-    
-    .action-card,
-    .category-card,
-    .command-item,
-    .result-item {
-        border-width: 0.5px;
-    }
-}
+3. burger-menu.js:
+   - Добавлена поддержка touch событий
+   - Реализован свайп для закрытия меню
+   - Добавлены анимации появления/исчезновения
+   - Блокировка прокрутки при открытом меню на мобильных
+   - Поддержка клавиши Escape
 
-/* Улучшенная поддержка темной темы */
-@media (prefers-color-scheme: dark) {
-    .action-card,
-    .category-card,
-    .command-item,
-    .result-item {
-        background: rgba(26, 26, 46, 0.9);
-    }
-}
+4. helper.html:
+   - Адаптивные сетки для команд и категорий
+   - Оптимизированные размеры модальных окон
+   - Улучшенная поддержка жестов для всех элементов
+   - Адаптация для ландшафтной ориентации
 
-/* Оптимизация для устройств с низким разрешением */
-@media (max-width: 320px) {
-    .logo {
-        font-size: 1rem;
-    }
-    
-    .subtitle {
-        font-size: 0.6rem;
-    }
-    
-    .action-text {
-        font-size: 0.9rem;
-    }
-    
-    .action-desc {
-        font-size: 0.75rem;
-    }
-    
-    .category-name {
-        font-size: 0.75rem;
-    }
-    
-    .command-name {
-        font-size: 0.8rem;
-    }
-    
-    .command-desc {
-        font-size: 0.7rem;
-    }
-}
+5. adminindex.html:
+   - Адаптивные сетки для команд и действий
+   - Оптимизированные размеры пустых секций
+   - Улучшенная поддержка жестов
+   - Адаптация для ландшафтной ориентации
 
-/* Оптимизация для устройств с вырезами */
-@supports (padding: max(0px)) {
-    .header {
-        padding-top: max(0.6rem, env(safe-area-inset-top) + 0.2rem);
-    }
-    
-    .main-content {
-        padding-bottom: max(2rem, env(safe-area-inset-bottom) + 1rem);
-    }
-    
-    .modal-content {
-        padding-bottom: max(2rem, env(safe-area-inset-bottom) + 1rem);
-    }
-}
+6. categories.html:
+   - Адаптивные сетки категорий (2 колонки на планшетах, 1 на телефонах)
+   - Оптимизированные размеры иконок и текста
+   - Улучшенная поддержка жестов
+   - Адаптация для ландшафтной ориентации (3 колонки)
 
-/* Улучшенная поддержка темной темы */
-@media (prefers-color-scheme: dark) {
-    .action-card,
-    .category-card,
-    .command-item,
-    .result-item {
-        background: rgba(26, 26, 46, 0.9);
-    }
-}
+7. chat_rules.html:
+   - Адаптивные размеры контейнеров и карточек
+   - Оптимизированные отступы и размеры шрифтов
+   - Улучшенная поддержка жестов
+   - Адаптация для ландшафтной ориентации (2 колонки)
 
-/* Оптимизация для устройств с низким разрешением */
-@media (max-width: 320px) {
-    .logo {
-        font-size: 1rem;
-    }
-    
-    .subtitle {
-        font-size: 0.6rem;
-    }
-    
-    .action-text {
-        font-size: 0.9rem;
-    }
-    
-    .action-desc {
-        font-size: 0.75rem;
-    }
-    
-    .category-name {
-        font-size: 0.75rem;
-    }
-    
-    .command-name {
-        font-size: 0.8rem;
-    }
-    
-    .command-desc {
-        font-size: 0.7rem;
-    }
-} 
+8. statistics.html:
+   - Адаптивные сетки статистики (2 колонки на планшетах, 1 на телефонах)
+   - Оптимизированные размеры графиков
+   - Улучшенная поддержка жестов
+   - Адаптация для ландшафтной ориентации (3 колонки статистики, 2 колонки графиков)
+
+ТЕХНИЧЕСКИЕ ДЕТАЛИ:
+--------------------
+
+Медиа-запросы:
+- @media (max-width: 768px) - планшеты и телефоны
+- @media (max-width: 480px) - телефоны
+- @media (max-width: 360px) - маленькие телефоны
+- @media (min-width: 769px) and (max-width: 1024px) - планшеты
+- @media (max-width: 768px) and (orientation: landscape) - ландшафтная ориентация
+
+Оптимизации жестов:
+- touch-action: manipulation
+- -webkit-tap-highlight-color: transparent
+- transform: scale(0.98) при активном состоянии
+- Поддержка свайпов для закрытия модальных окон
+
+Адаптивные размеры:
+- Шрифты: от 0.7rem до 1.8rem в зависимости от экрана
+- Отступы: от 8px до 24px
+- Размеры иконок: от 14px до 32px
+- Радиусы скругления: от 8px до 20px
+
+СЕТКИ:
+-------
+- Десктоп: 3-4 колонки
+- Планшет: 2-3 колонки
+- Телефон: 1-2 колонки
+- Ландшафтная ориентация: 2-3 колонки
+
+ПРОИЗВОДИТЕЛЬНОСТЬ:
+--------------------
+- Оптимизированные анимации (transform вместо position)
+- Минимальное использование box-shadow на мобильных
+- Эффективное использование CSS Grid и Flexbox
+- Оптимизированные размеры изображений и иконок
+
+ДОСТУПНОСТЬ:
+-------------
+- Улучшенные размеры тач-таргетов (минимум 44px)
+- Контрастные цвета для лучшей читаемости
+- Поддержка клавиатурной навигации
+- Семантическая разметка HTML
+
+РЕЗУЛЬТАТ:
+----------
+Полная адаптация под мобильные устройства с:
+- Отличным UX на всех размерах экранов
+- Быстрой производительностью
+- Интуитивным управлением жестами
+- Красивым дизайном на всех устройствах 

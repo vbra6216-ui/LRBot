@@ -5,6 +5,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Все команды - Helper Bot</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Дополнительная мобильная адаптация для all_commands.html */
+        @media (max-width: 768px) {
+            .content-container {
+                padding: 1.5rem;
+            }
+            
+            .content-section h3 {
+                font-size: 1.3rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .commands-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .command-card {
+                padding: 16px;
+                border-radius: 14px;
+            }
+            
+            .command-title {
+                font-size: 0.95rem;
+                margin-bottom: 8px;
+            }
+            
+            .command-desc {
+                font-size: 0.85rem;
+                line-height: 1.4;
+            }
+            
+            .command-category {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+                margin-top: 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .content-container {
+                padding: 1.25rem;
+            }
+            
+            .content-section h3 {
+                font-size: 1.2rem;
+                margin-bottom: 1.25rem;
+            }
+            
+            .commands-grid {
+                gap: 10px;
+            }
+            
+            .command-card {
+                padding: 14px;
+                border-radius: 12px;
+            }
+            
+            .command-title {
+                font-size: 0.9rem;
+                margin-bottom: 6px;
+            }
+            
+            .command-desc {
+                font-size: 0.8rem;
+                line-height: 1.3;
+            }
+            
+            .command-category {
+                font-size: 0.7rem;
+                padding: 3px 6px;
+                margin-top: 6px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .content-container {
+                padding: 1rem;
+            }
+            
+            .content-section h3 {
+                font-size: 1.1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .command-card {
+                padding: 12px;
+            }
+            
+            .command-title {
+                font-size: 0.85rem;
+                margin-bottom: 5px;
+            }
+            
+            .command-desc {
+                font-size: 0.75rem;
+                line-height: 1.3;
+            }
+            
+            .command-category {
+                font-size: 0.65rem;
+                padding: 2px 5px;
+                margin-top: 5px;
+            }
+        }
+        
+        /* Адаптация для ландшафтной ориентации */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .commands-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .command-card {
+                padding: 12px;
+            }
+            
+            .command-title {
+                font-size: 0.9rem;
+            }
+            
+            .command-desc {
+                font-size: 0.8rem;
+            }
+            
+            .command-category {
+                font-size: 0.7rem;
+            }
+        }
+        
+        /* Улучшенная поддержка жестов */
+        @media (max-width: 768px) {
+            .command-card {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+            
+            .command-card:active {
+                transform: scale(0.98);
+                transition: transform 0.1s ease;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">

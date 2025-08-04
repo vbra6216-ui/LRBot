@@ -245,6 +245,251 @@
             color: #e0e0f0;
             opacity: 0.7;
         }
+        
+        /* Мобильная адаптация */
+        @media (max-width: 768px) {
+            .commands-section {
+                padding: 20px;
+                margin-bottom: 24px;
+            }
+            
+            .commands-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .command-card {
+                padding: 14px;
+            }
+            
+            .command-title {
+                font-size: 0.95rem;
+            }
+            
+            .command-desc {
+                font-size: 0.85rem;
+            }
+            
+            .empty-section {
+                padding: 30px 20px;
+            }
+            
+            .empty-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .empty-title {
+                font-size: 1.3rem;
+            }
+            
+            .empty-description {
+                font-size: 0.9rem;
+            }
+            
+            .return-button {
+                padding: 12px 20px;
+                font-size: 0.95rem;
+            }
+            
+            .search-modal-content {
+                padding: 20px;
+                width: 95%;
+                max-height: 85vh;
+            }
+            
+            .search-modal-title {
+                font-size: 1.3rem;
+            }
+            
+            .search-result-item {
+                padding: 16px;
+            }
+            
+            .search-result-title {
+                font-size: 1rem;
+            }
+            
+            .search-result-desc {
+                font-size: 0.85rem;
+            }
+            
+            .action-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .action-card {
+                padding: 16px;
+            }
+            
+            .action-icon {
+                font-size: 1.8rem;
+                margin-bottom: 10px;
+            }
+            
+            .action-text {
+                font-size: 0.9rem;
+            }
+            
+            .action-desc {
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .commands-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .command-card {
+                padding: 12px;
+            }
+            
+            .command-title {
+                font-size: 0.9rem;
+            }
+            
+            .command-desc {
+                font-size: 0.8rem;
+            }
+            
+            .empty-section {
+                padding: 24px 16px;
+            }
+            
+            .empty-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .empty-title {
+                font-size: 1.2rem;
+            }
+            
+            .empty-description {
+                font-size: 0.85rem;
+            }
+            
+            .return-button {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .search-modal-content {
+                padding: 16px;
+                width: 98%;
+            }
+            
+            .search-modal-title {
+                font-size: 1.2rem;
+            }
+            
+            .search-result-item {
+                padding: 14px;
+            }
+            
+            .search-result-title {
+                font-size: 0.95rem;
+            }
+            
+            .search-result-desc {
+                font-size: 0.8rem;
+            }
+            
+            .action-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .action-card {
+                padding: 14px;
+            }
+            
+            .action-icon {
+                font-size: 1.6rem;
+            }
+            
+            .action-text {
+                font-size: 0.85rem;
+            }
+            
+            .action-desc {
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* Адаптация для ландшафтной ориентации */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .commands-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .command-card {
+                padding: 12px;
+            }
+            
+            .command-title {
+                font-size: 0.9rem;
+            }
+            
+            .command-desc {
+                font-size: 0.8rem;
+            }
+            
+            .action-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .action-card {
+                padding: 12px;
+            }
+            
+            .action-icon {
+                font-size: 1.5rem;
+                margin-bottom: 8px;
+            }
+            
+            .action-text {
+                font-size: 0.8rem;
+            }
+            
+            .action-desc {
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* Улучшенная поддержка жестов */
+        @media (max-width: 768px) {
+            .command-card,
+            .action-card,
+            .search-result-item,
+            .return-button {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+            
+            .command-card:active,
+            .action-card:active,
+            .search-result-item:active,
+            .return-button:active {
+                transform: scale(0.98);
+                transition: transform 0.1s ease;
+            }
+            
+            .search-modal-close {
+                -webkit-tap-highlight-color: transparent;
+                touch-action: manipulation;
+            }
+            
+            .search-modal-close:active {
+                transform: scale(0.9);
+                transition: transform 0.1s ease;
+            }
+        }
 
     </style>
 </head>
