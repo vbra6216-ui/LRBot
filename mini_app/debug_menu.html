@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Menu</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="burger-menu.js"></script>
+    <style>
+        .debug-info {
+            background: rgba(26, 26, 46, 0.8);
+            padding: 20px;
+            margin: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .debug-info h2 {
+            color: #7B61FF;
+            margin-bottom: 15px;
+        }
+        
+        .debug-item {
+            background: #2a2c5a;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 3px solid #7B61FF;
+        }
+        
+        .debug-item h3 {
+            color: #7B61FF;
+            margin-bottom: 5px;
+        }
+        
+        .debug-item p {
+            color: #e0e0f0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1 class="logo">🐛 Debug Menu</h1>
+                    <p class="subtitle">Отладка кнопки меню</p>
+                </div>
+                <div class="header-actions">
+                    <!-- Кнопка меню будет добавлена динамически -->
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="debug-info">
+                <h2>Отладочная информация</h2>
+                
+                <div class="debug-item">
+                    <h3>1. Проверка header-actions</h3>
+                    <p id="headerActionsStatus">Проверяем...</p>
+                </div>
+                
+                <div class="debug-item">
+                    <h3>2. Проверка кнопки меню</h3>
+                    <p id="menuButtonStatus">Проверяем...</p>
+                </div>
+                
+                <div class="debug-item">
+                    <h3>3. Проверка меню</h3>
+                    <p id="menuStatus">Проверяем...</p>
+                </div>
+                
+                <div class="debug-item">
+                    <h3>4. Консоль браузера</h3>
+                    <p>Откройте консоль браузера (F12) и посмотрите на сообщения</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Проверка через 1 секунду после загрузки
+        setTimeout(() => {
+            const headerActions = document.querySelector('.header-actions');
+            const menuButton = document.getElementById('burgerMenuBtn');
+            const menu = document.getElementById('burgerMenu');
+            
+            document.getElementById('headerActionsStatus').textContent = 
+                headerActions ? '✅ Найден' : '❌ Не найден';
+            
+            document.getElementById('menuButtonStatus').textContent = 
+                menuButton ? '✅ Найдена' : '❌ Не найдена';
+            
+            document.getElementById('menuStatus').textContent = 
+                menu ? '✅ Найдено' : '❌ Не найдено';
+        }, 1000);
+    </script>
+</body>
+</html> 

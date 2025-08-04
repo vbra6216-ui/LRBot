@@ -5,6 +5,7 @@ class BurgerMenu {
         this.menuBtn = null;
         this.closeBtn = null;
         this.isAdminBot = this.detectAdminBot();
+        this.isOpen = false;
         this.init();
     }
 
@@ -129,13 +130,11 @@ class BurgerMenu {
                 </svg>
                 <span>Работы</span>
             </a>
-            <a href="statistics.html" class="burger-menu-item">
+            <a href="choice.html" class="burger-menu-item">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 3V21H21" stroke="#7B61FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M9 9L12 6L16 10L21 5" stroke="#7B61FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M21 5H16V10" stroke="#7B61FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M19 12H5M12 19L5 12L12 5" stroke="#7B61FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                <span>Статистика</span>
+                <span>Выбор бота</span>
             </a>
         `;
     }
@@ -185,48 +184,78 @@ class BurgerMenu {
             // Вставляем кнопку в начало header-actions
             headerActions.insertBefore(menuBtn, headerActions.firstChild);
             this.menuBtn = menuBtn;
+            
+            console.log('Кнопка меню добавлена:', this.menuBtn);
+        } else {
+            console.error('header-actions не найден!');
         }
     }
 
     initEventListeners() {
         if (this.menuBtn) {
-            this.menuBtn.addEventListener('click', () => this.openMenu());
+            console.log('Инициализация обработчиков для кнопки меню');
+            
+            // Улучшенная обработка кликов для мобильных устройств
+            this.menuBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Клик по кнопке меню');
+                this.openMenu();
+            });
+            
             // Добавляем поддержку touch событий для мобильных
             this.menuBtn.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 this.menuBtn.style.transform = 'scale(0.95)';
             });
-            this.menuBtn.addEventListener('touchend', () => {
+            
+            this.menuBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
                 this.menuBtn.style.transform = '';
+                console.log('Touch по кнопке меню');
+                this.openMenu();
             });
+        } else {
+            console.error('Кнопка меню не найдена!');
         }
         
         if (this.closeBtn) {
-            this.closeBtn.addEventListener('click', () => this.closeMenu());
+            this.closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.closeMenu();
+            });
+            
             // Добавляем поддержку touch событий для мобильных
             this.closeBtn.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 this.closeBtn.style.transform = 'scale(0.95)';
             });
-            this.closeBtn.addEventListener('touchend', () => {
+            
+            this.closeBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
                 this.closeBtn.style.transform = '';
+                this.closeMenu();
             });
         }
         
         if (this.menu) {
+            // Закрытие при клике на фон
             this.menu.addEventListener('click', (e) => {
                 if (e.target === this.menu) {
                     this.closeMenu();
                 }
             });
             
-            // Добавляем поддержку свайпа для закрытия меню на мобильных
+            // Улучшенная поддержка свайпа для закрытия меню на мобильных
             let startY = 0;
             let startX = 0;
+            let isSwiping = false;
             
             this.menu.addEventListener('touchstart', (e) => {
                 startY = e.touches[0].clientY;
                 startX = e.touches[0].clientX;
+                isSwiping = false;
             });
             
             this.menu.addEventListener('touchmove', (e) => {
@@ -238,7 +267,8 @@ class BurgerMenu {
                 const diffX = startX - currentX;
                 
                 // Если свайп вниз больше чем в сторону, закрываем меню
-                if (diffY > 50 && Math.abs(diffY) > Math.abs(diffX)) {
+                if (diffY > 30 && Math.abs(diffY) > Math.abs(diffX) && !isSwiping) {
+                    isSwiping = true;
                     this.closeMenu();
                     startY = 0;
                     startX = 0;
@@ -248,20 +278,31 @@ class BurgerMenu {
             this.menu.addEventListener('touchend', () => {
                 startY = 0;
                 startX = 0;
+                isSwiping = false;
             });
         }
         
         // Добавляем обработчик для закрытия меню при нажатии Escape
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.menu && this.menu.style.display === 'flex') {
+            if (e.key === 'Escape' && this.isOpen) {
+                this.closeMenu();
+            }
+        });
+        
+        // Закрытие меню при изменении размера окна
+        window.addEventListener('resize', () => {
+            if (this.isOpen) {
                 this.closeMenu();
             }
         });
     }
 
     openMenu() {
-        if (this.menu) {
+        if (this.menu && !this.isOpen) {
+            console.log('Открытие меню');
+            this.isOpen = true;
             this.menu.style.display = 'flex';
+            
             // Добавляем анимацию появления
             this.menu.style.opacity = '0';
             this.menu.style.transform = 'scale(0.95)';
@@ -280,7 +321,10 @@ class BurgerMenu {
     }
 
     closeMenu() {
-        if (this.menu) {
+        if (this.menu && this.isOpen) {
+            console.log('Закрытие меню');
+            this.isOpen = false;
+            
             // Добавляем анимацию исчезновения
             this.menu.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
             this.menu.style.opacity = '0';
@@ -301,5 +345,6 @@ class BurgerMenu {
 
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Инициализация BurgerMenu');
     new BurgerMenu();
 }); 

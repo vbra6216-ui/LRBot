@@ -298,6 +298,46 @@
                 max-height: 85vh;
             }
             
+            /* Мобильная адаптация для поиска */
+            .search-input-wrapper {
+                border: 2px solid rgba(255, 255, 255, 0.2);
+                background: rgba(26, 26, 46, 0.9);
+                padding: 0.6rem 0.8rem;
+                margin: 0 10px;
+            }
+            
+            .search-input-wrapper:focus-within {
+                border-color: #FF0000;
+                background: rgba(26, 26, 46, 0.95);
+                box-shadow: 0 8px 24px rgba(255, 0, 0, 0.2);
+            }
+            
+            .search-input {
+                font-size: 0.95rem;
+            }
+            
+            .search-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .search-input-wrapper {
+                padding: 0.5rem 0.7rem;
+                margin: 0 5px;
+            }
+            
+            .search-input {
+                font-size: 0.9rem;
+            }
+            
+            .search-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+            
             .search-modal-title {
                 font-size: 1.3rem;
             }
@@ -462,6 +502,79 @@
             }
         }
         
+        /* Стили для быстрых действий */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .action-card {
+            background: #2a2c5a;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid transparent;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(255, 0, 0, 0.2);
+            border-color: #FF0000;
+        }
+        
+        .action-icon {
+            margin-bottom: 12px;
+        }
+        
+        .action-text {
+            font-weight: bold;
+            color: #FF0000;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .action-desc {
+            color: #e0e0f0;
+            font-size: 0.9em;
+        }
+        
+        /* Мобильная адаптация для быстрых действий */
+        @media (max-width: 768px) {
+            .action-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .action-card {
+                padding: 16px;
+            }
+            
+            .action-text {
+                font-size: 1rem;
+            }
+            
+            .action-desc {
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .action-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .action-card {
+                padding: 14px;
+            }
+        }
+
         /* Улучшенная поддержка жестов */
         @media (max-width: 768px) {
             .command-card,
@@ -503,11 +616,7 @@
                     <p class="subtitle">Главный помощник и справочник</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-icon" id="burgerMenuBtn" title="Меню">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 12H21M3 6H21M3 18H21" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </button>
+                    <!-- Кнопка меню будет добавлена динамически через burger-menu.js -->
                 </div>
             </div>
         </header>
