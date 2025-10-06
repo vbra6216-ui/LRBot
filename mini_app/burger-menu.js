@@ -4,16 +4,32 @@ class BurgerMenu {
         this.menu = null;
         this.menuBtn = null;
         this.closeBtn = null;
-        this.isAdminBot = this.detectAdminBot();
+        this.botType = this.detectBotType();
         this.isOpen = false;
         this.init();
     }
 
-    detectAdminBot() {
-        // Определяем, является ли это AdminBot по URL или заголовку
-        return window.location.pathname.includes('admin') || 
-               document.title.includes('Admin') ||
-               document.querySelector('.logo')?.textContent.includes('Admin');
+    detectBotType() {
+        // Определяем тип бота по URL или заголовку
+        if (window.location.pathname.includes('admin') || 
+            document.title.includes('Admin') ||
+            document.querySelector('.logo')?.textContent.includes('Admin')) {
+            return 'admin';
+        } else if (window.location.pathname.includes('rodina') || 
+                   document.title.includes('Rodina') ||
+                   document.querySelector('.logo')?.textContent.includes('Rodina')) {
+            return 'rodina';
+        } else {
+            return 'helper';
+        }
+    }
+
+    get isAdminBot() {
+        return this.botType === 'admin';
+    }
+
+    get isRodinaBot() {
+        return this.botType === 'rodina';
     }
 
     init() {
@@ -41,11 +57,11 @@ class BurgerMenu {
             <div class="burger-menu" id="burgerMenu" style="display: none;">
                 <div class="burger-menu-content">
                     <div class="burger-menu-header">
-                        <h3>${this.isAdminBot ? 'Admin Bot' : 'Меню'}</h3>
+                        <h3>${this.isAdminBot ? 'Admin Bot' : this.isRodinaBot ? 'Rodina RP Bot' : 'Меню'}</h3>
                         <button class="burger-menu-close" id="closeBurgerMenu">×</button>
                     </div>
                     <div class="burger-menu-items">
-                        ${this.isAdminBot ? this.getAdminMenuItems() : this.getHelperMenuItems()}
+                        ${this.getMenuItems()}
                     </div>
                 </div>
             </div>
@@ -55,6 +71,35 @@ class BurgerMenu {
         
         this.menu = document.getElementById('burgerMenu');
         this.closeBtn = document.getElementById('closeBurgerMenu');
+    }
+
+    getMenuItems() {
+        if (this.isAdminBot) {
+            return this.getAdminMenuItems();
+        } else if (this.isRodinaBot) {
+            return this.getRodinaMenuItems();
+        } else {
+            return this.getHelperMenuItems();
+        }
+    }
+
+    getRodinaMenuItems() {
+        return `
+            <a href="rodina_rp.html" class="burger-menu-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="#22C55E" stroke-width="2"/>
+                    <path d="M9 22V12H15V22" stroke="#22C55E" stroke-width="2"/>
+                </svg>
+                <span>Главная</span>
+            </a>
+            <a href="choice.html" class="burger-menu-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" stroke="#22C55E" stroke-width="2"/>
+                </svg>
+                <span>Выбор бота</span>
+            </a>
+            <!-- Разделы для Rodina RP будут добавлены позже -->
+        `;
     }
 
     getHelperMenuItems() {
@@ -174,7 +219,7 @@ class BurgerMenu {
             menuBtn.className = 'btn-icon';
             menuBtn.id = 'burgerMenuBtn';
             menuBtn.title = 'Меню';
-            const strokeColor = this.isAdminBot ? '#FF0000' : '#7B61FF';
+            const strokeColor = this.isAdminBot ? '#FF0000' : this.isRodinaBot ? '#22C55E' : '#7B61FF';
             menuBtn.innerHTML = `
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M3 12H21M3 6H21M3 18H21" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

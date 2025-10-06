@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Команды категории - Rodina RP Bot</title>
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        window.COMMANDS_JSON = 'rodinacm.json';
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1 class="logo">🏠 Rodina RP Bot</h1>
+                    <p class="subtitle" id="subtitle">Команды категории</p>
+                </div>
+                <div class="header-actions">
+                    <a href="rodina_categories.html" class="btn-icon" title="Назад">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 12H5M12 19L5 12L12 5" stroke="#7B61FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="content-section">
+                <div class="content-container">
+                    <h3 id="categoryTitle">📂 Категория</h3>
+                    <div id="categoryCommands" class="commands-grid"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function getParam(name) {
+            const url = new URL(window.location.href);
+            return url.searchParams.get(name);
+        }
+        async function loadCategoryCommands() {
+            const category = getParam('category') || 'Категория';
+            document.getElementById('categoryTitle').textContent = `📂 ${category}`;
+            document.getElementById('subtitle').textContent = `Команды категории: ${category}`;
+            try {
+                const response = await fetch(window.COMMANDS_JSON || 'rodinacm.json');
+                const commands = await response.json();
+                const list = document.getElementById('categoryCommands');
+                const filtered = Array.isArray(commands) ? commands.filter(c => c.category === category) : [];
+                if (!filtered.length) {
+                    list.innerHTML = '<div class="no-results">Команды не найдены</div>';
+                    return;
+                }
+                list.innerHTML = filtered.map(cmd => `
+                    <div class="command-item" data-command="${cmd.command.replace(/\"/g, '&quot;')}">
+                        <div class="command-name">${cmd.command}</div>
+                        <div class="command-desc">${cmd.description}</div>
+                    </div>
+                `).join('');
+                list.querySelectorAll('.command-item').forEach(el => {
+                    el.addEventListener('click', function() { copyCommandToClipboard(this.dataset.command); });
+                });
+            } catch (e) {
+                document.getElementById('categoryCommands').innerHTML = '<div class="no-results">Ошибка загрузки</div>';
+            }
+        }
+        function copyCommandToClipboard(command) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(command);
+            } else {
+                const ta = document.createElement('textarea'); ta.value = command; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', loadCategoryCommands);
+    </script>
+</body>
+</html>
+

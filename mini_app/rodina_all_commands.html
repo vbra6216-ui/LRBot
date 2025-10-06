@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Все команды - Rodina RP Bot</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @media (max-width: 768px) {
+            .content-container { padding: 1.5rem; }
+            .content-section h3 { font-size: 1.3rem; margin-bottom: 1.5rem; }
+            .commands-grid { grid-template-columns: 1fr; gap: 12px; }
+            .command-card { padding: 16px; border-radius: 14px; }
+            .command-title { font-size: 0.95rem; margin-bottom: 8px; }
+            .command-desc { font-size: 0.85rem; line-height: 1.4; }
+            .command-category { font-size: 0.75rem; padding: 4px 8px; margin-top: 8px; }
+        }
+        @media (max-width: 480px) {
+            .content-container { padding: 1.25rem; }
+            .content-section h3 { font-size: 1.2rem; margin-bottom: 1.25rem; }
+            .commands-grid { gap: 10px; }
+            .command-card { padding: 14px; border-radius: 12px; }
+            .command-title { font-size: 0.9rem; margin-bottom: 6px; }
+            .command-desc { font-size: 0.8rem; line-height: 1.3; }
+            .command-category { font-size: 0.7rem; padding: 3px 6px; margin-top: 6px; }
+        }
+        @media (max-width: 360px) {
+            .content-container { padding: 1rem; }
+            .content-section h3 { font-size: 1.1rem; margin-bottom: 1rem; }
+            .command-card { padding: 12px; }
+            .command-title { font-size: 0.85rem; margin-bottom: 5px; }
+            .command-desc { font-size: 0.75rem; line-height: 1.3; }
+            .command-category { font-size: 0.65rem; padding: 2px 5px; margin-top: 5px; }
+        }
+        @media (max-width: 768px) and (orientation: landscape) {
+            .commands-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .command-card { padding: 12px; }
+            .command-title { font-size: 0.9rem; }
+            .command-desc { font-size: 0.8rem; }
+            .command-category { font-size: 0.7rem; }
+        }
+        @media (max-width: 768px) {
+            .command-card { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+            .command-card:active { transform: scale(0.98); transition: transform 0.1s ease; }
+        }
+    </style>
+    <script>
+        window.COMMANDS_JSON = 'rodinacm.json';
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1 class="logo">🏠 Rodina RP Bot</h1>
+                    <p class="subtitle">Все команды</p>
+                </div>
+                <div class="header-actions">
+                    <a href="rodina_rp.html" class="btn-icon" title="Назад">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 12H5M12 19L5 12L12 5" stroke="#7B61FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="content-section">
+                <div class="content-container">
+                    <h3>📋 Все команды</h3>
+                    <div id="allCommandsList" class="commands-list">
+                        <div class="loading">Загрузка команд...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function loadAllCommands() {
+            try {
+                const response = await fetch(window.COMMANDS_JSON || 'rodinacm.json');
+                const commands = await response.json();
+                const commandsList = document.getElementById('allCommandsList');
+                if (!Array.isArray(commands) || commands.length === 0) {
+                    commandsList.innerHTML = '<div class="no-results">Команды не найдены</div>';
+                    return;
+                }
+                const groupedCommands = {};
+                commands.forEach(cmd => {
+                    if (!groupedCommands[cmd.category]) groupedCommands[cmd.category] = [];
+                    groupedCommands[cmd.category].push(cmd);
+                });
+                let html = '';
+                Object.entries(groupedCommands).forEach(([category, categoryCommands]) => {
+                    html += `<div class="command-group">
+                        <h4 class="command-category-title">${category}</h4>
+                        <div class="commands-grid">
+                            ${categoryCommands.map(cmd => `
+                                <div class=\"command-item\" data-command=\"${cmd.command.replace(/\"/g, '&quot;')}\">
+                                    <div class=\"command-name\">${cmd.command}</div>
+                                    <div class=\"command-desc\">${cmd.description}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                });
+                commandsList.innerHTML = html;
+                commandsList.querySelectorAll('.command-item').forEach(el => {
+                    el.addEventListener('click', function() { copyCommandToClipboard(this.dataset.command); });
+                });
+            } catch (error) {
+                console.error('Ошибка загрузки команд:', error);
+                document.getElementById('allCommandsList').innerHTML = '<div class="no-results">Ошибка загрузки команд</div>';
+            }
+        }
+        function copyCommandToClipboard(command) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(command).then(() => { showCommandNotification('Команда скопирована!'); }).catch(() => { fallbackCopyCommand(command); });
+            } else { fallbackCopyCommand(command); }
+        }
+        function fallbackCopyCommand(command) {
+            const textArea = document.createElement('textarea');
+            textArea.value = command;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try { document.execCommand('copy'); showCommandNotification('Команда скопирована!'); }
+            catch (err) { showCommandNotification('Ошибка копирования'); }
+            document.body.removeChild(textArea);
+        }
+        function showCommandNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #7B61FF; color: #fff; padding: 12px 20px; border-radius: 8px; z-index: 1000; font-weight: 500; box-shadow: 0 4px 16px rgba(123, 97, 255, 0.3)';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => { notification.remove(); }, 2000);
+        }
+        document.addEventListener('DOMContentLoaded', loadAllCommands);
+    </script>
+</body>
+</html>
+

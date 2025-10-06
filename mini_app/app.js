@@ -171,7 +171,8 @@ async function initializeApp() {
 // Загрузка команд из API
 async function loadCommands() {
     try {
-        const response = await fetch('commands.json');
+        const commandsUrl = (typeof window !== 'undefined' && window.COMMANDS_JSON) ? window.COMMANDS_JSON : 'commands.json';
+        const response = await fetch(commandsUrl);
         const commands = await response.json();
         appState.commands = commands;
 
@@ -423,12 +424,15 @@ function setupEventListeners() {
         if (actionCard) {
             const href = actionCard.getAttribute('href');
             if (href) {
-                // Handle navigation to other pages
-                if (href.includes('.html')) {
-                    window.location.href = href;
-                } else {
+                // Если это ссылка-якорь на внутреннее действие, предотвращаем переход
+                if (!href.includes('.html')) {
+                    event.preventDefault();
                     handleActionClick(href);
+                    return;
                 }
+
+                // Переход на внешние страницы .html
+                window.location.href = href;
             }
         }
     });
