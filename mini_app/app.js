@@ -287,14 +287,18 @@ async function loadUserProfileFromTelegram() {
 // Загрузка всех данных
 async function loadAllData() {
     try {
-        await Promise.all([
-            loadCommands(),
-            loadGPSData(),
-            loadRPTerms(),
-            loadHelperDuties(),
-            loadChatRules(),
-            loadMuteRules()
-        ]);
+        if (window.RODINA_MODE) {
+            await loadCommands();
+        } else {
+            await Promise.all([
+                loadCommands(),
+                loadGPSData(),
+                loadRPTerms(),
+                loadHelperDuties(),
+                loadChatRules(),
+                loadMuteRules()
+            ]);
+        }
         console.log('Все данные загружены');
     } catch (error) {
         console.error('Ошибка загрузки данных:', error);
