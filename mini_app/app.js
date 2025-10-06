@@ -296,7 +296,10 @@ async function loadUserProfileFromTelegram() {
 async function loadAllData() {
     try {
         if (window.RODINA_MODE) {
-            await loadCommands();
+            await Promise.all([
+                loadCommands(),
+                loadRodinaGPSData()
+            ]);
         } else {
             await Promise.all([
                 loadCommands(),
@@ -321,6 +324,18 @@ async function loadGPSData() {
         appState.gpsData = await response.json();
     } catch (error) {
         console.error('Ошибка загрузки GPS данных:', error);
+        appState.gpsData = {};
+    }
+}
+
+// Загрузка GPS данных для Rodina
+async function loadRodinaGPSData() {
+    try {
+        const response = await fetch('gpsrd.json');
+        if (!response.ok) throw new Error('Ошибка загрузки GPS Rodina');
+        appState.gpsData = await response.json();
+    } catch (error) {
+        console.error('Ошибка загрузки GPS Rodina:', error);
         appState.gpsData = {};
     }
 }
@@ -551,8 +566,8 @@ function showSearchSuggestions(query) {
         })));
     }
 
-    // В Rodina режиме скрываем GPS из подсказок
-    if (!window.RODINA_MODE && appState.gpsData) {
+    // Добавляем GPS в подсказки (в обычном режиме gps.json, в Rodina режиме gpsrd.json)
+    if (appState.gpsData) {
         Object.entries(appState.gpsData).forEach(([category, locations]) => {
             if (Array.isArray(locations)) {
                 const matchingLocations = locations.filter(location =>
@@ -677,8 +692,8 @@ function performSearchLogic(query) {
         })));
     }
 
-    // В Rodina режиме отключаем поиск по GPS
-    if (!window.RODINA_MODE && appState.gpsData && Object.keys(appState.gpsData).length > 0) {
+    // Ищем по GPS (в обычном режиме gps.json, в Rodina режиме gpsrd.json)
+    if (appState.gpsData && Object.keys(appState.gpsData).length > 0) {
         Object.entries(appState.gpsData).forEach(([category, locations]) => {
             if (Array.isArray(locations)) {
                 const matchingLocations = locations.filter(location => {
