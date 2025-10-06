@@ -172,7 +172,15 @@ async function initializeApp() {
 async function loadCommands() {
     try {
         const commandsUrl = (typeof window !== 'undefined' && window.COMMANDS_JSON) ? window.COMMANDS_JSON : 'commands.json';
-        const response = await fetch(commandsUrl);
+        let response;
+        try {
+            response = await fetch(commandsUrl, { cache: 'no-cache' });
+        } catch (e) {
+            console.warn('Не удалось загрузить', commandsUrl, '— пробую commands.json');
+        }
+        if (!response || !response.ok) {
+            response = await fetch('commands.json', { cache: 'no-cache' });
+        }
         const commands = await response.json();
         appState.commands = commands;
 

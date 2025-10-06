@@ -620,7 +620,7 @@
                         <div class="action-desc">Главные правила и положения</div>
                     </div>
                     
-                    <div class="action-card" onclick="showServerEventsRules()">
+                    <a href="rodina_server_events.html" class="action-card">
                         <div class="action-icon">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" stroke="#7B61FF" stroke-width="2"/>
@@ -628,9 +628,9 @@
                         </div>
                         <div class="action-text">Правила серверных мероприятий</div>
                         <div class="action-desc">События и мероприятия</div>
-                    </div>
+                    </a>
                     
-                    <div class="action-card" onclick="showGovernmentRules()">
+                    <a href="rodina_government.html" class="action-card">
                         <div class="action-icon">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="#7B61FF" stroke-width="2"/>
@@ -639,9 +639,9 @@
                         </div>
                         <div class="action-text">Правила для государственных организаций</div>
                         <div class="action-desc">Госструктуры и органы власти</div>
-                    </div>
+                    </a>
                     
-                    <div class="action-card" onclick="showIllegalOrgRules()">
+                    <a href="rodina_illegal_orgs.html" class="action-card">
                         <div class="action-icon">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#7B61FF" stroke-width="2"/>
@@ -651,9 +651,9 @@
                         </div>
                         <div class="action-text">Правила для нелегальных организаций</div>
                         <div class="action-desc">Криминальные группировки</div>
-                    </div>
+                    </a>
                     
-                    <div class="action-card" onclick="showForumRules()">
+                    <a href="rodina_forum.html" class="action-card">
                         <div class="action-icon">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M18 8L22 12L18 16" stroke="#7B61FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -663,7 +663,7 @@
                         </div>
                         <div class="action-text">Правила использования форума</div>
                         <div class="action-desc">Форум и общение</div>
-                    </div>
+                    </a>
                 </div>
             </section>
 
@@ -2259,33 +2259,39 @@
         // Server events rules (empty)
         function showServerEventsRules() {
             hideAllSections();
-            document.getElementById('serverEventsRulesSection')?.style.display = 'block';
+            var s = document.getElementById('serverEventsRulesSection');
+            if (s) s.style.display = 'block';
         }
         function hideServerEventsRules() {
             hideAllSections();
-            document.getElementById('projectRulesSection')?.style.display = 'block';
+            var p = document.getElementById('projectRulesSection');
+            if (p) p.style.display = 'block';
         }
 
         // Illegal org rules (empty)
         function showIllegalOrgRules() {
             hideAllSections();
-            document.getElementById('illegalOrgRulesSection')?.style.display = 'block';
+            var s = document.getElementById('illegalOrgRulesSection');
+            if (s) s.style.display = 'block';
         }
         function hideIllegalOrgRules() {
             hideAllSections();
-            document.getElementById('mainServerRulesSection')?.style.display = 'block';
+            var m = document.getElementById('mainServerRulesSection');
+            if (m) m.style.display = 'block';
         }
 
         // Forum rules
         function showForumRules() {
             hideAllSections();
-            document.getElementById('forumRulesSection')?.style.display = 'block';
+            var fr = document.getElementById('forumRulesSection');
+            if (fr) fr.style.display = 'block';
             const content = document.getElementById('forumRulesContent');
             if (content) content.style.display = 'none';
         }
         function hideForumRules() {
             hideAllSections();
-            document.getElementById('projectRulesSection')?.style.display = 'block';
+            var p = document.getElementById('projectRulesSection');
+            if (p) p.style.display = 'block';
         }
         function setForumContent(html) {
             const content = document.getElementById('forumRulesContent');
@@ -2406,6 +2412,15 @@
         // Инициализация (работает и после полной загрузки DOM)
         function initRodinaPage() {
             console.log('Инициализация Rodina RP страницы');
+            try {
+                var params = new URLSearchParams(window.location.search);
+                var section = params.get('section');
+                if (section === 'projectRules') {
+                    showProjectRules();
+                }
+            } catch (e) {
+                console.warn('URL params parse failed', e);
+            }
 
             // Кнопка правил проекта
             const projectRulesBtn = document.getElementById('projectRulesBtn');
