@@ -92,13 +92,26 @@ class BurgerMenu {
                 </svg>
                 <span>Главная</span>
             </a>
+            <a href="rodina_categories.html" class="burger-menu-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="5" width="18" height="14" rx="2" stroke="#22C55E" stroke-width="2"/>
+                    <path d="M3 8H21" stroke="#22C55E" stroke-width="2"/>
+                </svg>
+                <span>Категории</span>
+            </a>
+            <a href="rodina_all_commands.html" class="burger-menu-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="#22C55E" stroke-width="2"/>
+                    <path d="M14 2V8H20" stroke="#22C55E" stroke-width="2"/>
+                </svg>
+                <span>Все команды</span>
+            </a>
             <a href="choice.html" class="burger-menu-item">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" stroke="#22C55E" stroke-width="2"/>
                 </svg>
                 <span>Выбор бота</span>
             </a>
-            <!-- Разделы для Rodina RP будут добавлены позже -->
         `;
     }
 
