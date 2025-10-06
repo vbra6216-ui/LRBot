@@ -539,8 +539,8 @@ function showSearchSuggestions(query) {
         })));
     }
 
-    // Добавляем GPS локации
-    if (appState.gpsData) {
+    // В Rodina режиме скрываем GPS из подсказок
+    if (!window.RODINA_MODE && appState.gpsData) {
         Object.entries(appState.gpsData).forEach(([category, locations]) => {
             if (Array.isArray(locations)) {
                 const matchingLocations = locations.filter(location =>
@@ -558,8 +558,8 @@ function showSearchSuggestions(query) {
         });
     }
 
-    // Добавляем RP термины
-    if (appState.rpTerms) {
+    // В Rodina режиме скрываем RP термины
+    if (!window.RODINA_MODE && appState.rpTerms) {
         Object.entries(appState.rpTerms).forEach(([term, description]) => {
             // Проверяем оригинальный термин
             if (term.toLowerCase().includes(query) ||
@@ -665,8 +665,8 @@ function performSearchLogic(query) {
         })));
     }
 
-    // Поиск по GPS данным
-    if (appState.gpsData && Object.keys(appState.gpsData).length > 0) {
+    // В Rodina режиме отключаем поиск по GPS
+    if (!window.RODINA_MODE && appState.gpsData && Object.keys(appState.gpsData).length > 0) {
         Object.entries(appState.gpsData).forEach(([category, locations]) => {
             if (Array.isArray(locations)) {
                 const matchingLocations = locations.filter(location => {
@@ -683,8 +683,8 @@ function performSearchLogic(query) {
         });
     }
 
-    // Поиск по RP терминам
-    if (appState.rpTerms && Object.keys(appState.rpTerms).length > 0) {
+    // В Rodina режиме отключаем поиск по RP терминам
+    if (!window.RODINA_MODE && appState.rpTerms && Object.keys(appState.rpTerms).length > 0) {
         Object.entries(appState.rpTerms).forEach(([term, description]) => {
             // Проверяем оригинальный термин
             const text = `${term} ${description}`.toLowerCase();
@@ -712,8 +712,8 @@ function performSearchLogic(query) {
         });
     }
 
-    // Поиск по обязанностям хелпера
-    if (appState.helperDuties && Object.keys(appState.helperDuties).length > 0) {
+    // В Rodina режиме отключаем обязанности хелпера
+    if (!window.RODINA_MODE && appState.helperDuties && Object.keys(appState.helperDuties).length > 0) {
         Object.entries(appState.helperDuties).forEach(([section, duties]) => {
             if (Array.isArray(duties)) {
                 const matchingDuties = duties.filter(duty => {
@@ -730,8 +730,8 @@ function performSearchLogic(query) {
         });
     }
 
-    // Поиск по правилам чата
-    if (appState.chatRules && Object.keys(appState.chatRules).length > 0) {
+    // В Rodina режиме отключаем правила чата
+    if (!window.RODINA_MODE && appState.chatRules && Object.keys(appState.chatRules).length > 0) {
         Object.entries(appState.chatRules).forEach(([rule, description]) => {
             const text = `${rule} ${description}`.toLowerCase();
             if (words.some(word => text.includes(word))) {
@@ -745,8 +745,8 @@ function performSearchLogic(query) {
         });
     }
 
-    // Поиск по правилам мута
-    if (appState.muteRules && Object.keys(appState.muteRules).length > 0) {
+    // В Rodina режиме отключаем правила мута
+    if (!window.RODINA_MODE && appState.muteRules && Object.keys(appState.muteRules).length > 0) {
         Object.entries(appState.muteRules).forEach(([rule, description]) => {
             const text = `${rule} ${description}`.toLowerCase();
             if (words.some(word => text.includes(word))) {
