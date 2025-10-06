@@ -295,15 +295,22 @@ async function loadUserProfileFromTelegram() {
 // Загрузка всех данных
 async function loadAllData() {
     try {
+        // В режиме Rodina грузим ТОЛЬКО gpsrd.json (без обычного gps.json)
         if (window.RODINA_MODE) {
-            await Promise.all([
-                loadCommands(),
-                loadRodinaGPSData()
-            ]);
+            await loadCommands();
+            await loadRodinaGPSData(true); // перезаписываем gpsData данными Rodina
         } else {
+            // В обычном режиме загружаем базовый GPS, а затем пытаемся подмешать Rodina GPS
             await Promise.all([
                 loadCommands(),
-                loadGPSData(),
+                loadGPSData()
+            ]);
+
+            // Подмешиваем Rodina GPS (игнорируем ошибку, если файла нет)
+            await loadRodinaGPSData(false);
+
+            // Подгружаем дополнительные справочники
+            await Promise.all([
                 loadRPTerms(),
                 loadHelperDuties(),
                 loadChatRules(),
@@ -329,14 +336,29 @@ async function loadGPSData() {
 }
 
 // Загрузка GPS данных для Rodina
-async function loadRodinaGPSData() {
+async function loadRodinaGPSData(overwrite) {
     try {
         const response = await fetch('gpsrd.json');
         if (!response.ok) throw new Error('Ошибка загрузки GPS Rodina');
-        appState.gpsData = await response.json();
+        const rodinaGps = await response.json();
+
+        if (overwrite) {
+            // Используем только Rodina GPS
+            appState.gpsData = rodinaGps || {};
+        } else {
+            // Сливаем данные: объединяем категории, убираем дубли
+            const merged = { ...(appState.gpsData || {}) };
+            Object.entries(rodinaGps || {}).forEach(([category, locations]) => {
+                if (!Array.isArray(locations)) return;
+                const existing = Array.isArray(merged[category]) ? merged[category] : [];
+                const set = new Set([ ...existing, ...locations ]);
+                merged[category] = Array.from(set);
+            });
+            appState.gpsData = merged;
+        }
     } catch (error) {
-        console.error('Ошибка загрузки GPS Rodina:', error);
-        appState.gpsData = {};
+        // Тихо логируем, но не затираем уже загруженные данные
+        console.warn('Не удалось подмешать GPS Rodina:', error?.message || error);
     }
 }
 
