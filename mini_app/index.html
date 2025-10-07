@@ -5,8 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini App</title>
     <script>
-        // Автоматическое перенаправление на страницу выбора
-        window.location.href = 'choice.html';
+        // Автоматическое перенаправление с проверкой PIN
+        (function() {
+            try {
+                var ok = false;
+                var verified = localStorage.getItem('site_pin_verified') === 'true';
+                var ts = parseInt(localStorage.getItem('site_pin_verified_at') || '0', 10);
+                var now = Date.now();
+                var hourMs = 60 * 60 * 1000;
+                if (verified && ts && (now - ts) < hourMs) {
+                    ok = true;
+                } else {
+                    // просрочено — очищаем флаг
+                    localStorage.removeItem('site_pin_verified');
+                    localStorage.removeItem('site_pin_verified_at');
+                }
+                window.location.replace(ok ? 'choice.html' : 'pin.html');
+            } catch (e) {
+                // Если localStorage недоступен, требуем ввод PIN
+                window.location.replace('pin.html');
+            }
+        })();
     </script>
 </head>
 <body>

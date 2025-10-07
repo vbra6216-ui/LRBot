@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход по PIN</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .pin-wrapper {
+            width: 100%;
+            max-width: 520px;
+            padding: 28px;
+            border-radius: 20px;
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid rgba(255,255,255,0.12);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .pin-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        .pin-subtitle {
+            color: rgba(255,255,255,0.75);
+            margin-bottom: 22px;
+        }
+        .pin-inputs {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px;
+            margin: 16px 0 22px;
+            width: 100%;
+        }
+        .pin-inputs input {
+            width: 100%;
+            height: 60px;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.15);
+            background: rgba(35, 36, 74, 0.6);
+            color: #fff;
+            outline: none;
+            transition: all .2s ease;
+            caret-color: #7B61FF;
+        }
+        .pin-inputs input:focus {
+            border-color: #7B61FF;
+            box-shadow: 0 0 0 4px rgba(123,97,255,0.18), inset 0 0 12px rgba(123,97,255,0.25);
+        }
+        .pin-btn {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            box-shadow: 0 10px 30px rgba(102,126,234,0.35);
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .pin-btn:hover { transform: translateY(-1px); box-shadow: 0 14px 36px rgba(102,126,234,0.45); }
+        .pin-btn:active { transform: translateY(0); }
+        .pin-error {
+            margin-top: 12px;
+            color: #ff6b6b;
+            font-weight: 600;
+            min-height: 20px;
+        }
+        .pin-footer {
+            margin-top: 14px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+        }
+        @media (max-width: 420px){
+            .pin-wrapper { max-width: 94vw; padding: 20px; }
+            .pin-inputs { gap: 10px; }
+            .pin-inputs input { height: 50px; font-size: 1.2rem; border-radius: 10px; }
+        }
+        @media (max-width: 340px){
+            .pin-inputs { gap: 8px; }
+            .pin-inputs input { height: 46px; font-size: 1.1rem; }
+        }
+    </style>
+    <script>
+        (function() {
+            try {
+                if (localStorage.getItem('site_pin_verified') === 'true') {
+                    window.location.replace('choice.html');
+                }
+            } catch (e) {}
+        })();
+        document.addEventListener('DOMContentLoaded', function(){
+            var inputs = Array.prototype.slice.call(document.querySelectorAll('.pin-inputs input'));
+            // Ввод по одному символу, допускаем буквы и цифры
+            inputs.forEach(function(input, idx){
+                input.addEventListener('input', function(e){
+                    var v = String(e.target.value || '').slice(0,1);
+                    e.target.value = v;
+                    if (v && idx < inputs.length - 1) inputs[idx+1].focus();
+                    updateState();
+                });
+                input.addEventListener('keydown', function(e){
+                    if (e.key === 'Backspace' && !input.value && idx > 0) {
+                        inputs[idx-1].focus();
+                    }
+                });
+            });
+            // Вставка всего пароля сразу
+            inputs[0].addEventListener('paste', function(e){
+                var text = (e.clipboardData || window.clipboardData).getData('text');
+                if (!text) return;
+                e.preventDefault();
+                for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].value = text[i] ? text[i] : '';
+                }
+                updateState();
+            });
+            function updateState(){
+                var pin = inputs.map(function(i){ return i.value; }).join('');
+                if (pin.length === 7) {
+                    verify(pin);
+                }
+            }
+            function verify(pin){
+                var error = document.getElementById('pin-error');
+                if (pin === 'RodinaX') {
+                    try {
+                        localStorage.setItem('site_pin_verified','true');
+                        localStorage.setItem('site_pin_verified_at', String(Date.now()));
+                    } catch(e) {}
+                    window.location.replace('choice.html');
+                } else {
+                    error.textContent = 'Неверный PIN. Попробуйте снова';
+                    inputs.forEach(function(i){ i.value=''; });
+                    inputs[0].focus();
+                }
+            }
+            document.getElementById('pin-submit').addEventListener('click', function(){
+                var pin = inputs.map(function(i){ return i.value; }).join('');
+                verify(pin);
+            });
+            inputs[0].focus();
+        });
+    </script>
+    <script>
+        // Отключаем навигацию назад для безопасности (мягко)
+        (function(){
+            var pushed = false;
+            window.addEventListener('load', function(){
+                history.pushState(null, document.title, location.href);
+                pushed = true;
+            });
+            window.addEventListener('popstate', function(){
+                if (pushed) history.pushState(null, document.title, location.href);
+            });
+        })();
+    </script>
+    <script>
+        // Фолбэк на мобильной клавиатуре: показываем цифровую раскладку, но допускаем буквы
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="color-scheme" content="dark light">
+    <meta name="theme-color" content="#0f0f23">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="manifest" href="data:application/manifest+json,{\"name\":\"Mini App\",\"short_name\":\"Mini\"}">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <style>
+        .pin-logo {
+            display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+        }
+        .pin-logo svg { width:40px;height:40px; }
+    </style>
+    
+    
+</head>
+<body>
+    <div class="pin-wrapper">
+        <div class="pin-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L13.09 8.26L20 9L14 14.14L15.18 21.02L12 17.77L8.82 21.02L10 14.14L4 9L10.91 8.26L12 2Z" stroke="#7B61FF" stroke-width="2"/>
+            </svg>
+        </div>
+        <div class="pin-title">Добро пожаловать</div>
+        <div class="pin-subtitle">Введите PIN для входа</div>
+        <div class="pin-inputs">
+            <input type="text" inputmode="text" autocomplete="one-time-code" maxlength="1" aria-label="1" />
+            <input type="text" inputmode="text" maxlength="1" aria-label="2" />
+            <input type="text" inputmode="text" maxlength="1" aria-label="3" />
+            <input type="text" inputmode="text" maxlength="1" aria-label="4" />
+            <input type="text" inputmode="text" maxlength="1" aria-label="5" />
+            <input type="text" inputmode="text" maxlength="1" aria-label="6" />
+            <input type="text" inputmode="text" maxlength="1" aria-label="7" />
+        </div>
+        <button id="pin-submit" class="pin-btn">Войти</button>
+        <div id="pin-error" class="pin-error"></div>
+    </div>
+</body>
+</html>
+
+

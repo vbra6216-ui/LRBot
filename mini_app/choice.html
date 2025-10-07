@@ -7,6 +7,25 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // Гвард для страницы выбора — нельзя обходить PIN
+        (function() {
+            try {
+                var verified = localStorage.getItem('site_pin_verified') === 'true';
+                var ts = parseInt(localStorage.getItem('site_pin_verified_at') || '0', 10);
+                var now = Date.now();
+                var hourMs = 60 * 60 * 1000;
+                var valid = verified && ts && (now - ts) < hourMs;
+                if (!valid) {
+                    localStorage.removeItem('site_pin_verified');
+                    localStorage.removeItem('site_pin_verified_at');
+                    window.location.replace('pin.html');
+                }
+            } catch (e) {
+                window.location.replace('pin.html');
+            }
+        })();
+    </script>
     <style>
         body {
             background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #1a1a2e 100%);
