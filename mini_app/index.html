@@ -13,12 +13,20 @@
                 var ts = parseInt(localStorage.getItem('site_pin_verified_at') || '0', 10);
                 var now = Date.now();
                 var hourMs = 60 * 60 * 1000;
-                if (verified && ts && (now - ts) < hourMs) {
-                    ok = true;
+                var sessionOk = false;
+                try {
+                    sessionOk = sessionStorage.getItem('site_pin_session') === 'true';
+                } catch (e) {}
+                var navEntry = (performance && performance.getEntriesByType) ? performance.getEntriesByType('navigation')[0] : null;
+                var isReload = false;
+                try { isReload = navEntry ? (navEntry.type === 'reload') : (performance && performance.navigation && performance.navigation.type === 1); } catch(e) {}
+                if (verified && ts && (now - ts) < hourMs && sessionOk && !isReload) {
+                    ok = true; // действующая сессия внутри часа
                 } else {
                     // просрочено — очищаем флаг
                     localStorage.removeItem('site_pin_verified');
                     localStorage.removeItem('site_pin_verified_at');
+                    try { sessionStorage.removeItem('site_pin_session'); } catch (e) {}
                 }
                 window.location.replace(ok ? 'choice.html' : 'pin.html');
             } catch (e) {

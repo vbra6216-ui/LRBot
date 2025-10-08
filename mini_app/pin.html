@@ -106,7 +106,6 @@
         })();
         document.addEventListener('DOMContentLoaded', function(){
             var inputs = Array.prototype.slice.call(document.querySelectorAll('.pin-inputs input'));
-            // Ввод по одному символу, допускаем буквы и цифры
             inputs.forEach(function(input, idx){
                 input.addEventListener('input', function(e){
                     var v = String(e.target.value || '').slice(0,1);
@@ -120,7 +119,6 @@
                     }
                 });
             });
-            // Вставка всего пароля сразу
             inputs[0].addEventListener('paste', function(e){
                 var text = (e.clipboardData || window.clipboardData).getData('text');
                 if (!text) return;
@@ -138,10 +136,12 @@
             }
             function verify(pin){
                 var error = document.getElementById('pin-error');
-                if (pin === 'RodinaX') {
+                var E=(function(){var a=[95,98,105,100,99,108,85],k=13;for(var i=0;i<a.length;i++){a[i]=String.fromCharCode(a[i]^k);}return a.join('');})();
+                if (pin === E) {
                     try {
                         localStorage.setItem('site_pin_verified','true');
                         localStorage.setItem('site_pin_verified_at', String(Date.now()));
+                        try { sessionStorage.setItem('site_pin_session','true'); } catch(e) {}
                     } catch(e) {}
                     window.location.replace('choice.html');
                 } else {
@@ -158,7 +158,6 @@
         });
     </script>
     <script>
-        // Отключаем навигацию назад для безопасности (мягко)
         (function(){
             var pushed = false;
             window.addEventListener('load', function(){
@@ -169,9 +168,6 @@
                 if (pushed) history.pushState(null, document.title, location.href);
             });
         })();
-    </script>
-    <script>
-        // Фолбэк на мобильной клавиатуре: показываем цифровую раскладку, но допускаем буквы
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
