@@ -15,19 +15,13 @@
                 var ts = parseInt(localStorage.getItem('site_pin_verified_at') || '0', 10);
                 var now = Date.now();
                 var hourMs = 60 * 60 * 1000;
-                var sessionOk = false;
-                try { sessionOk = sessionStorage.getItem('site_pin_session') === 'true'; } catch(e) {}
-                var navEntry = (performance && performance.getEntriesByType) ? performance.getEntriesByType('navigation')[0] : null;
-                var isReload = false;
-                try { isReload = navEntry ? (navEntry.type === 'reload') : (performance && performance.navigation && performance.navigation.type === 1); } catch(e) {}
-                var valid = verified && ts && (now - ts) < hourMs && sessionOk && !isReload;
+                // Упрощённая проверка: только localStorage и срок действия 1 час
+                var valid = verified && ts && (now - ts) < hourMs;
                 if (!valid) {
-                    localStorage.removeItem('site_pin_verified');
-                    localStorage.removeItem('site_pin_verified_at');
-                    try { sessionStorage.removeItem('site_pin_session'); } catch(e) {}
                     window.location.replace('pin.html');
                 }
             } catch (e) {
+                // Если localStorage недоступен — требуем ввод PIN
                 window.location.replace('pin.html');
             }
         })();
